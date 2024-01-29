@@ -1,0 +1,8 @@
+// 查询具体某班级
+https://qcsh.h5yunban.com/youth-learning/cgi-bin/branch-api/course/records?pageSize=20&pageNum=1&desc=createTime&nid=N0001001100011136&course=C1055&accessToken=229FA624-AC44-4B44-919E-AFA2D4AC510D
+
+// 查询完成率
+https://qcsh.h5yunban.com/youth-learning/cgi-bin/branch-api/course/statis/v3?nid=N000100110001&beginCourse=C1055&accessToken=229FA624-AC44-4B44-919E-AFA2D4AC510D
+
+size默认上到120
+

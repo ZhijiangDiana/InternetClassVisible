@@ -1,0 +1,334 @@
+{
+    "status":200,
+    "message":null,
+    "result":{
+        "pagedInfo":{
+            "pageSize":20,
+            "pageNum":1,
+            "total":"36"
+        },
+        "list":[
+            {
+                "id":"999974",
+                "createTime":"2022-12-11 07:50:55",
+                "cardNo":"1935022205",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"Demo",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoFuvJoQicXRKJwuat8ricBqokJObS3CflAEej9RE2wE2sKl3yE3RfZc3EqAC8ngxib6jRCTFOzysfoQ/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"998707",
+                "createTime":"2022-12-11 00:13:07",
+                "cardNo":"段慧源",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"光行差",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/0zCjJt1LX9DLUuZdkXE2LNH0pnP7jwa8sQp9ZMm8gibjdCENpZMRZQUtO6fVHLPrk6iaeywCNJyajxYI0kWKYSPg/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"964387",
+                "createTime":"2022-12-10 17:35:09",
+                "cardNo":"肖祥悦1812440506",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"sigrid.shawn",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/Koibr5jmJhItgBziaSKzT3P3oJWTdibLKRexLV84ooZm5PEconB8N221X3268iaPgcTg0JB8QYpURr1pjY4HUVE8Dw/132",
+                "node":"上海理工大学光电信息与计算机工程学院",
+                "nid":"N000100110001"
+            },
+            {
+                "id":"869770",
+                "createTime":"2022-12-09 16:25:30",
+                "cardNo":"徐奕 1935030728",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"食不食油饼💢",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/ibVFNhBLqEEquCXjLPbBPylQBUKstfV3ZAXiaXFpNPXwiaDmiaABq8Nviayia6aj35y2xEXdbOyoocXvZ85tKuv5IeEQ/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"835700",
+                "createTime":"2022-12-09 12:03:50",
+                "cardNo":"1935031603",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"Lizhuor",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTLy4XyYTMxFboqyZDSWkGJYNOqQgYuicGbeLcrf70ZwJQf3iavfmXCn2zLqRgI8icF7CVibosuI1q4micQ/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"825393",
+                "createTime":"2022-12-09 10:31:38",
+                "cardNo":"周辰浩",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"×",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKFnqNtXPgibib6iabu8Uvibqgcicnfeia1R83kYqAy4icQ2HvUSVdicCzeHYWEItQphFq0LckjftQickUBNMA/132",
+                "node":"上海理工大学光电信息与计算机工程学院",
+                "nid":"N000100110001"
+            },
+            {
+                "id":"823375",
+                "createTime":"2022-12-09 10:16:27",
+                "cardNo":"1935031513",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"G_zih",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/Dbnj2kbQ1lyJ1EDWib0A5EGLDcTSRh65JaZuNCicepQHyywY9GwqMQPW8aZCiax9dO1l0ZFW1trqjs5iaaibEShKvQg/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"819265",
+                "createTime":"2022-12-09 13:40:02",
+                "cardNo":"1935031507",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"羊吃西兰花",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/B6opDnLpQAjVf6UD548ec4fhQ6UKm9yuwyCZ2vAULXhjvYp1GBXyK1QHX6ZeynXCxHslBAFJWayicuiaKY6YdlLg/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"816390",
+                "createTime":"2022-12-09 09:05:45",
+                "cardNo":"张晓燊",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"zxs",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/QvkSvps4yHY1N32GX9AXRfssMfv0Xax6rkgdYD8icjgibEWd4VqsIicHoWY5CcaibMiar9LVHee63vqfqI6MbgQ2MEQ/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"809535",
+                "createTime":"2022-12-08 22:59:15",
+                "cardNo":"沈阳1935030505",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"柿柿南策",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/UHMqWezQpjTpCvjncBFicHoiakErz2pxOhtmGfP1aOVh9iadOiaYtrfRvydoA2ic0dOcg0EGMGEYQrtfJMz8gm7cYibQ/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"808808",
+                "createTime":"2022-12-08 22:38:24",
+                "cardNo":"路维华 1935030919",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"小鹿同志",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/MLAQQEWBM8mUDQFSr5AfftjnzQIJSkKZY8KibISDzzrjsW1E87Frpiap2CaQCDShh05qycxtCbicUKAxYKDhSgtXw/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"807211",
+                "createTime":"2022-12-08 22:07:26",
+                "cardNo":"1935030313",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"GHZ",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTLCgnN7WgJ5mBzkQ8oQicDrXaeHAmMmeYia5Pd6kXDB24ZU689Ps8PRxhFEQCibwd9FUzLyjDq0hr7Dg/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"804582",
+                "createTime":"2022-12-08 21:40:25",
+                "cardNo":"蒿行健 1935031014",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"看健",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/j12rIP1tqCdFwnmTsy33Lqz5NBCibetSrZp2vlp1XU3KGhwqVAheJpILDN0TZtWaYrUHuJH3do5KLic5EYGWQdSw/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"786155",
+                "createTime":"2022-12-09 13:29:59",
+                "cardNo":"1935031526辛国栋",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"XIN",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/y2smdnib7JEKkzMLpJiabK72aOj1KkdibqRAhWGljwXvasBrLic7ADmWKwWSGhUIKrQX4SomDMCrG3ToKJib45Gay7w/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"785721",
+                "createTime":"2022-12-08 17:42:42",
+                "cardNo":"库来西·努尔买买提/1935030416",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"-KVRAX",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJNF9GEDP1GPSxMhRxSTh22bQaaeUHqTVAdj80OkibiaZnAUS4ib2zL4WxY1Of2k0Fmu3K4xs6YExrFw/132",
+                "node":"上海理工大学光电信息与计算机工程学院",
+                "nid":"N000100110001"
+            },
+            {
+                "id":"773403",
+                "createTime":"2022-12-08 15:37:49",
+                "cardNo":"吴国利1935021125",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"🌰",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/eBAYnbuotHXPjAH0UkSJDPib07iccYBTavTJ7qLPp2XDnxP6yCsoCrEqqML3If6bDwlZuJlKNdPuOe6V9uUAhiaNQ/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"763658",
+                "createTime":"2022-12-08 14:17:19",
+                "cardNo":"1935032208",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"Ep",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTI3Al8CEfxAhY0fkpY8z8n9MLUkVp9bibtfBTdAPwh81icXrTR4ybqeSQcAhprS0MDOpCuw2wuIwBTg/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"763556",
+                "createTime":"2022-12-09 13:34:33",
+                "cardNo":"刘伯岩1935030218",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"半生浮名",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/ba50c2I3ibEfQsuYoIEUuXicHUByFYYibekibOBDLvXwgZ6zXibcnHicUC4aD6ODjKwEtozRD07icEGYic3xqLicduREyCw/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"762913",
+                "createTime":"2022-12-08 14:10:17",
+                "cardNo":"阳灵",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"yl",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/u6PdmBOGWOjAoCyibP8iaUGWcblu5LzR9NpTiaSpFtXNFKVShy9SQn3MwxGzxnRQ7YWIbApN6B77Jc82Jh0ntVQWQ/132",
+                "node":"上海理工大学基础学院",
+                "nid":"N000100110012"
+            },
+            {
+                "id":"761750",
+                "createTime":"2022-12-08 13:59:02",
+                "cardNo":"1935030632赵陈洲",
+                "course":"2022年第28期",
+                "branchs":[
+                    "高校系统",
+                    "上海理工大学",
+                    "上海理工大学光电信息与计算机工程学院",
+                    "2019级光电信1班班级团支部"
+                ],
+                "nickname":"赵陈洲",
+                "avatar":"https://thirdwx.qlogo.cn/mmopen/vi_32/lzG2SkmG0XtkAgVxy0EyDhIFibDM1UEjwl9x3F3rA6K8AILsaZ10h8OCSnE6oBSXAgHRpWeibhrrJt9qLKqjEKxw/132",
+                "node":"上海理工大学光电信息与计算机工程学院",
+                "nid":"N000100110001"
+            }
+        ]
+    },
+    "debug":null
+}
