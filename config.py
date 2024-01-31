@@ -3,15 +3,17 @@ TORTOISE_ORM = {
         'default': {
             'engine': 'tortoise.backends.mysql',
             'credentials': {
-                'host': '121.40.25.50',
-                'port': '27017',
-                'database': '',
+                'user': 'root',
+                'password': '114514',
+                'host': 'localhost',
+                'port': '3306',
+                'database': 'internet_class_visible',
             }
         }
     },
     'apps': {
         'models': {
-            'models': ['entity.Clas', 'entity.Course', 'entity.Student', 'entity.Teacher', 'aerich.models'],
+            'models': ['entity.db_entity', 'aerich.models'],
             'default_connection': 'default'
         }
     },
