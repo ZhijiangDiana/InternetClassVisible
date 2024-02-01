@@ -5,6 +5,9 @@
 """
 
 import json
+import random
+import threading
+
 import requests
 import re
 import smtplib
@@ -66,8 +69,27 @@ class DoubtfulJsonReader:
         return value
 
 
+# 爬虫的单例模式
 class YouthBigLearning:
-    def __init__(self, json_file_path):
+    __instance = None
+    __lock = threading.Lock()
+
+    def __new__(cls, json_file_path="service/DataIn/prop.json"):
+        with cls.__lock:
+            if cls.__instance is None:
+                print('new successfully')
+                cls.__instance = super().__new__(cls)
+
+                # todo 短时间使用还可以，长时间跑的话需要开一个线程维护登陆信息
+                cls.__login(cls.__instance, json_file_path)
+        return cls.__instance
+
+    """
+        登录调用此函数
+    """
+
+    def __login(self, json_file_path):
+        # 原__init__中的代码块，用于初始化登陆信息
         statusCode = 404
         login_info = None
         # 生成读取器，读取json配置文件中的信息
@@ -311,3 +333,55 @@ class YouthBigLearning:
             else:
                 data.to_excel(f"{class_nid}本期完成率.xlsx")
         print("success")
+
+    """
+        爬取某人所有的学习记录
+    """
+
+    def get_member_record(self, org_id="", mem_name=""):
+        params = {
+            "nid": org_id,
+            "cardNo": mem_name,
+            "accessToken": self.access_token,
+            "pageNum": 1,
+        }
+
+        resp = requests.get(self.reader.read("query_record_by_member"), params=params,
+                            headers=self.reader.read("login_headers")).json()
+        # print(org_id, mem_name, resp)
+        respList = resp["result"]
+
+        time.sleep(random.randrange(1, 3))
+        return respList
+
+    """
+        爬取所有团员信息
+    """
+
+    def getAllMember(self, org_id=""):
+        all_member = []
+        cnt = 1
+        while True:
+            params = {
+                "pageSize": 300,
+                "pageNum": cnt,
+                "desc": "createTime",
+                "nid": org_id,
+                "course": None,
+                "accessToken": self.access_token
+            }
+
+            resp = requests.get(self.reader.read("query_member"), params=params,
+                                headers=self.reader.read("login_headers")).json()
+
+            respList = resp["result"]["list"]
+            total_cnt = resp["result"]["pagedInfo"]["total"]
+            if respList:
+                all_member += respList
+            else:
+                break
+            print(f"\r当前{len(all_member)}  剩余{total_cnt}", end='')
+            time.sleep(random.randrange(1, 5))
+
+            cnt += 1
+        return all_member

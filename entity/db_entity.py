@@ -1,4 +1,5 @@
 from tortoise import Model, fields
+from tortoise import models
 
 
 # {
@@ -10,7 +11,7 @@ from tortoise import Model, fields
 class Organization(Model):
     id = fields.CharField(max_length=45, pk=True, description="支部nid")
     pid = fields.CharField(max_length=45, description="上级支部nid")
-    title = fields.CharField(max_length=114, description="支部名称")
+    title = fields.CharField(max_length=114, description="支部名称", unique=True)
     qr_code = fields.CharField(max_length=1145, description="支部二维码外链地址")
 
 
@@ -64,8 +65,6 @@ class MemberCourse(Model):
     course = fields.ForeignKeyField('models.Course', related_name='Member')
 
     finish_datetime = fields.DatetimeField(description="完成时间")
-    nickname = fields.CharField(max_length=114, description="完成时的昵称")
-    avatar = fields.CharField(max_length=1145, description="完成时的头像外链")
 
     class Meta:
         unique_together = ('member', 'course')

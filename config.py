@@ -21,3 +21,5 @@ TORTOISE_ORM = {
     'timezone': 'Asia/Shanghai'
 }
 
+LOGIN_JSON = "service/DataIn/prop.json"
+LOGIN_AT_STARTUP = False

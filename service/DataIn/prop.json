@@ -39,5 +39,7 @@
   "mostRecentPeriodicalNum": 1076,
   "final_request_template_query_all": "https://qcsh.h5yunban.com/youth-learning/cgi-bin/branch-api/course/statis/v3",
   "nid": "N000100110001",
-  "final_request_template_query_certain": "https://qcsh.h5yunban.com/youth-learning/cgi-bin/branch-api/course/records"
+  "final_request_template_query_certain": "https://qcsh.h5yunban.com/youth-learning/cgi-bin/branch-api/course/records",
+  "query_member": "https://qcsh.h5yunban.com/youth-learning/cgi-bin/branch-api/node/users",
+  "query_record_by_member": "https://qcsh.h5yunban.com/youth-learning/cgi-bin/branch-api/course/statis/user"
 }
