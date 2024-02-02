@@ -10,6 +10,7 @@ from controller.test import test
 from controller.course import course
 from controller.organization import organization
 from service.DataIn.InterfacePraparation import YouthBigLearning
+from service.MemberFinishStatistic import CalculateRateService
 
 app = FastAPI()
 
@@ -25,6 +26,9 @@ register_tortoise(
 )
 
 if __name__ == '__main__':
+    # 实例化所有业务
+    CalculateRateService()
     if LOGIN_AT_STARTUP:
         youth_learning = YouthBigLearning()
+
     uvicorn.run("main:app", host='localhost', port=8080)

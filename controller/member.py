@@ -8,6 +8,7 @@ from dao import record_dao
 from entity.response import normal_resp
 from entity.db_entity import *
 from service.DataIn.InterfacePraparation import YouthBigLearning
+from service.MemberFinishStatistic import CalculateRateService
 
 member = APIRouter()
 
@@ -91,14 +92,12 @@ async def get_by_id(mem_id: int):
 # 统计某个成员的学习情况，返回其id，完成率，详细完成情况
 @member.get("/statistic/record/{mem_id}")
 async def get_course_finish_statistic(mem_id: int):
-    need_finish = await record_dao.get_courses_should_finish(mem_id)
-    finished = await record_dao.get_courses_finished(mem_id)
-
-    for course in need_finish:
-        course["is_finished"] = finished.__contains__(course)
+    calculate_service = CalculateRateService()
+    rate = await calculate_service.get_member_finish_rate(mem_id)
+    status = await calculate_service.get_finish_status(mem_id)
 
     return normal_resp(result={
         "mem_id": mem_id,
-        "finished_rate": len(finished) * 1.0 / len(need_finish),
-        "course_stat": need_finish
+        "finished_rate": rate,
+        "course_stat": status
     })
