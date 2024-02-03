@@ -21,8 +21,13 @@ TORTOISE_ORM = {
     'timezone': 'Asia/Shanghai'
 }
 
+SERVER_IP = "localhost"
+SERVER_PORT = 8080
+
 LOGIN_JSON = "service/DataIn/prop.json"
 LOGIN_AT_STARTUP = False
 
 ENVIRONMENT = "default"
 TIMEZONE = "Asia/Shanghai"
+
+INTERNAL_REQUEST_TOKEN = "1145141919810"

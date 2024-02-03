@@ -4,12 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c4ab64ff-7dca-4796-8a3e-20b071a4d04f" name="更改" comment="展示出某人的完成率，完成情况。三个实体的crud">
-      <change afterPath="$PROJECT_DIR$/service/MemberFinishStatistic.py" afterDir="false" />
+    <list default="true" id="c4ab64ff-7dca-4796-8a3e-20b071a4d04f" name="更改" comment="将刷新个人完成率业务封装到service层中，使用懒加载每60秒更新一次完成率">
+      <change afterPath="$PROJECT_DIR$/controller/internal.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/service/GlobalTimer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/member.py" beforeDir="false" afterPath="$PROJECT_DIR$/controller/member.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/MemberFinishStatistic.py" beforeDir="false" afterPath="$PROJECT_DIR$/service/MemberFinishStatistic.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -149,7 +150,8 @@
       <workItem from="1706619534639" duration="19541000" />
       <workItem from="1706668660781" duration="39270000" />
       <workItem from="1706793551823" duration="16372000" />
-      <workItem from="1706869289729" duration="13594000" />
+      <workItem from="1706869289729" duration="16543000" />
+      <workItem from="1706961985694" duration="18376000" />
     </task>
     <task id="LOCAL-00001" summary="项目基本">
       <option name="closed" value="true" />
@@ -183,7 +185,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706810777940</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="将刷新个人完成率业务封装到service层中，使用懒加载每60秒更新一次完成率">
+      <option name="closed" value="true" />
+      <created>1706892024068</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1706892024068</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -205,15 +215,16 @@
     <MESSAGE value="迁移数据库并添加了课程和支部数据" />
     <MESSAGE value="数据库构建完毕" />
     <MESSAGE value="展示出某人的完成率，完成情况。三个实体的crud" />
-    <option name="LAST_COMMIT_MESSAGE" value="展示出某人的完成率，完成情况。三个实体的crud" />
+    <MESSAGE value="将刷新个人完成率业务封装到service层中，使用懒加载每60秒更新一次完成率" />
+    <option name="LAST_COMMIT_MESSAGE" value="将刷新个人完成率业务封装到service层中，使用懒加载每60秒更新一次完成率" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/service/MemberFinishStatistic.py</url>
-          <line>72</line>
-          <option name="timeStamp" value="6" />
+          <url>file://$PROJECT_DIR$/controller/course.py</url>
+          <line>27</line>
+          <option name="timeStamp" value="18" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -221,6 +232,6 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/InternetClass$main_operator.coverage" NAME="main_operator 覆盖结果" MODIFIED="1706531647813" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DataIn" />
     <SUITE FILE_PATH="coverage/InternetClass$main_operator__1_.coverage" NAME="main_operator (1) 覆盖结果" MODIFIED="1706678067602" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/service/DataIn" />
-    <SUITE FILE_PATH="coverage/InternetClass$main.coverage" NAME="main 覆盖结果" MODIFIED="1706891668452" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/InternetClass$main.coverage" NAME="main 覆盖结果" MODIFIED="1706983116372" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
