@@ -5,7 +5,7 @@ from config import INTERNAL_REQUEST_TOKEN, SERVER_IP, SERVER_PORT
 
 import requests
 
-from service.MemberFinishStatistic import CalculateRateService
+from service.TotalCourseFinishStatistic import CalculateRateService
 
 
 class GlobalTimer:
@@ -32,7 +32,7 @@ class GlobalTimer:
     def _timer_func(self):
         while True:
             # 0s
-            requests.put(url=f"http://{SERVER_IP}:{SERVER_PORT}/internal/statistic/member_finish_rate",
+            requests.put(url=f"http://{SERVER_IP}:{SERVER_PORT}/internal/statistic/finish_rate",
                          params={'token': INTERNAL_REQUEST_TOKEN})
             sleep(60)
             # 60s

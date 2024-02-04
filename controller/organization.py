@@ -6,6 +6,7 @@ from pydantic import BaseModel, validator
 from entity.db_entity import *
 from dao import org_dao
 from entity.response import normal_resp
+from service.TotalCourseFinishStatistic import CalculateRateService
 
 organization = APIRouter()
 
@@ -35,7 +36,7 @@ async def get_all():
 
 @organization.get("/search/{org_id}")
 async def get_by_id(org_id: str):
-    is_exist = Organization.exists(id=org_id)
+    is_exist = await Organization.exists(id=org_id)
     if not is_exist:
         return normal_resp(
             message="查询结果为空"
@@ -45,4 +46,20 @@ async def get_by_id(org_id: str):
 
     return resp
 
+
+@organization.get("/statistic/record/{org_id}")
+async def get_course_finish_statistic(org_id: str):
+    is_exist = await Organization.exists(id=org_id)
+    if not is_exist:
+        return normal_resp(
+            message="查询结果为空"
+        )
+    cal = CalculateRateService()
+    rate = await cal.get_org_finish_rate(org_id)
+
+    return normal_resp(result={
+        "refresh_time": rate["refresh_time"],
+        "org_id": org_id,
+        "finished_rate": rate["organization_rate"],
+    })
 
