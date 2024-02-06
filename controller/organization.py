@@ -6,6 +6,7 @@ from pydantic import BaseModel, validator
 from entity.db_entity import *
 from dao import org_dao
 from entity.response import normal_resp
+from service.TotalCourseFinishStatistic import CalculateRateService
 
 organization = APIRouter()
 
@@ -35,7 +36,7 @@ async def get_all():
 
 @organization.get("/search/{org_id}")
 async def get_by_id(org_id: str):
-    is_exist = Organization.exists(id=org_id)
+    is_exist = await Organization.exists(id=org_id)
     if not is_exist:
         return normal_resp(
             message="查询结果为空"
@@ -44,5 +45,47 @@ async def get_by_id(org_id: str):
     resp = normal_resp(result=org)
 
     return resp
+
+
+@organization.get("/statistic/record/{org_id}")
+async def get_course_finish_statistic(org_id: str):
+    is_exist = await Organization.exists(id=org_id)
+    if not is_exist:
+        return normal_resp(
+            message="查询结果为空"
+        )
+    cal = CalculateRateService()
+    rate = await cal.get_org_finish_rate(org_id)
+
+    return normal_resp(result={
+        "refresh_time": rate["refresh_time"],
+        "org_id": org_id,
+        "finished_rate": rate["organization_rate"],
+    })
+
+
+@organization.get("/statistic/rank/all/{org_id}", description="获取支部全部课程中在学院内的排名")
+async def get_rank_statistic(org_id: str):
+    cal = CalculateRateService()
+    rate = await cal.get_org_finish_rate(org_id)
+    rank = await cal.get_org_rate_rank(org_id)
+
+    return normal_resp(result={
+        "refresh_time": rate["refresh_time"],
+        "org_id": org_id,
+        "finished_rate": rate["organization_rate"],
+        "rank": rank
+    })
+
+
+@organization.get("/statistic/rank_list/all/{org_id}", description="获取支部成员全部课程中在支部内的排名列表")
+async def get_rank_statistic_member(org_id: str):
+    cal = CalculateRateService()
+    rank = await cal.get_org_member_rank_list(org_id)
+
+    return normal_resp(result={
+        "refresh_time": rank["refresh_time"],
+        "rank_list": rank["rank"]
+    })
 
 

@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from fastapi import APIRouter
 from pydantic import BaseModel, validator
@@ -8,7 +9,7 @@ from dao import record_dao
 from entity.response import normal_resp
 from entity.db_entity import *
 from service.DataIn.InterfacePraparation import YouthBigLearning
-from service.MemberFinishStatistic import CalculateRateService
+from service.TotalCourseFinishStatistic import CalculateRateService
 
 member = APIRouter()
 
@@ -38,6 +39,19 @@ member = APIRouter()
 #                             name=entry["cardNo"], user_type=entry["userType"], organization_id=org.id)
 #
 #     return normal_resp()
+
+
+# @member.put("/modify_year")
+# async def modify_year():
+#     orgs = await Organization.all()
+#     for org in orgs:
+#         members = await Member.filter(organization_id=org.id)
+#         join_date = datetime(year=int(org.title[:4]), day=1, month=9)
+#         for mem in members:
+#             # 修改join_datetime字段
+#             mem.join_datetime = join_date
+#             # 保存更改
+#             await mem.save()
 
 
 # 列出所有成员
@@ -97,7 +111,24 @@ async def get_course_finish_statistic(mem_id: int):
     status = await calculate_service.get_finish_status(mem_id)
 
     return normal_resp(result={
+        "refresh_time": rate["refresh_time"],
         "mem_id": mem_id,
-        "finished_rate": rate,
+        "finished_rate": rate["member_rate"],
         "course_stat": status
+    })
+
+
+# 统计某个成员的总完成率和排名
+@member.get("/statistic/rank/all/{mem_id}")
+async def get_member_rank(mem_id: int):
+    calculate_service = CalculateRateService()
+    rate = await calculate_service.get_member_finish_rate(mem_id)
+    rank = await calculate_service.get_member_rate_rank(mem_id)
+
+    return normal_resp(result={
+        "refresh_time": rate["refresh_time"],
+        "mem_id": mem_id,
+        "finished_rate": rate["member_rate"],
+        "org_rank": rank["rank_in_org"],
+        "p_org_rank": rank["rank_in_p_org"],
     })
