@@ -16,3 +16,25 @@ async def get_statistic_record():
     })
 
     return resp
+
+
+@p_org.get("/statistic/rank_list/all/member")
+async def get_member_rank_list():
+    cal = CalculateRateService()
+    rank = await cal.get_p_member_rank_list()
+
+    return normal_resp(result={
+        "refresh_time": rank["refresh_time"],
+        "rank_list": rank["rank"]
+    })
+
+
+@p_org.get("/statistic/rank_list/all/org")
+async def get_all_org_rank_list():
+    cal = CalculateRateService()
+    rank = await cal.get_p_org_rank_list()
+
+    return normal_resp(result={
+        "refresh_time": rank["refresh_time"],
+        "rank_list": rank["rank"]
+    })

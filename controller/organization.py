@@ -63,3 +63,29 @@ async def get_course_finish_statistic(org_id: str):
         "finished_rate": rate["organization_rate"],
     })
 
+
+@organization.get("/statistic/rank/all/{org_id}", description="获取支部全部课程中在学院内的排名")
+async def get_rank_statistic(org_id: str):
+    cal = CalculateRateService()
+    rate = await cal.get_org_finish_rate(org_id)
+    rank = await cal.get_org_rate_rank(org_id)
+
+    return normal_resp(result={
+        "refresh_time": rate["refresh_time"],
+        "org_id": org_id,
+        "finished_rate": rate["organization_rate"],
+        "rank": rank
+    })
+
+
+@organization.get("/statistic/rank_list/all/{org_id}", description="获取支部成员全部课程中在支部内的排名列表")
+async def get_rank_statistic_member(org_id: str):
+    cal = CalculateRateService()
+    rank = await cal.get_org_member_rank_list(org_id)
+
+    return normal_resp(result={
+        "refresh_time": rank["refresh_time"],
+        "rank_list": rank["rank"]
+    })
+
+

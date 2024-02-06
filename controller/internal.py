@@ -10,7 +10,7 @@ internal = APIRouter()
 @internal.put("/statistic/finish_rate")
 async def update_statistic_member_finish_rate(token: str):
     if token == INTERNAL_REQUEST_TOKEN:
-        await CalculateRateService().update_finish_rate()
+        await CalculateRateService().update_statistic()
         resp = normal_resp()
     else:
         resp = normal_resp(
