@@ -41,5 +41,6 @@
   "nid": "N000100110001",
   "final_request_template_query_certain": "https://qcsh.h5yunban.com/youth-learning/cgi-bin/branch-api/course/records",
   "query_member": "https://qcsh.h5yunban.com/youth-learning/cgi-bin/branch-api/node/users",
-  "query_record_by_member": "https://qcsh.h5yunban.com/youth-learning/cgi-bin/branch-api/course/statis/user"
+  "query_record_by_member": "https://qcsh.h5yunban.com/youth-learning/cgi-bin/branch-api/course/statis/user",
+  "query_all_courses": "https://qcsh.h5yunban.com/youth-learning/cgi-bin/branch-api/course/list"
 }

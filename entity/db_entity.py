@@ -6,6 +6,7 @@ class Organization(Model):
     pid = fields.CharField(max_length=45, description="上级支部nid")
     title = fields.CharField(max_length=114, description="支部名称", unique=True)
     qr_code = fields.CharField(max_length=1145, description="支部二维码外链地址")
+    create_time = fields.DatetimeField(description="支部创建时间")
 
 
 class Member(Model):

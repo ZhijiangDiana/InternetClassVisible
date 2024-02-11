@@ -385,3 +385,39 @@ class YouthBigLearning:
 
             cnt += 1
         return all_member
+
+    """
+        爬取所有课程信息
+    """
+    def get_all_courses(self):
+        params = {
+            "pageSize": 999,
+            "pageNum": 1,
+            "desc": "startTime",
+            "type": "网上主题团课",
+            "accessToken": self.access_token
+        }
+        resp = requests.get(self.reader.read("query_all_courses"), params=params,
+                            headers=self.reader.read("login_headers")).json()
+
+        # {
+        #     "id": "C1080",
+        #     "pid": "C",
+        #     "type": "网上主题团课",
+        #     "startTime": "2024-01-08 10:04:36",
+        #     "endTime": "2024-01-15 12:00:00",
+        #     "title": "2024年第1期",
+        #     "cover": "https:\/\/st-file.yunbanos.cn\/uploadsoss\/youth-learning\/2024-01-08\/a46b010eac1a0314bcfae59d3623adac.png",
+        #     "uriType": "超链接",
+        #     "uri": "https:\/\/h5.cyol.com\/special\/daxuexi\/ga1hyw0m8q\/index.html",
+        #     "content": null,
+        #     "s": "正常",
+        #     "creator": "0003417D-0876-4282-8FC5-CA08E0D454E9",
+        #     "createTime": "2024-01-08 10:05:02",
+        #     "users": "839382",
+        #     "clickTimes": "1032008",
+        #     "isTop": null,
+        #     "score": null
+        # }
+
+        return resp["result"]["list"]
