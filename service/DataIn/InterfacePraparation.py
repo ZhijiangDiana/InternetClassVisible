@@ -389,7 +389,7 @@ class YouthBigLearning:
     """
         爬取所有课程信息
     """
-    def get_all_courses(self):
+    async def get_all_courses(self):
         params = {
             "pageSize": 999,
             "pageNum": 1,
@@ -419,5 +419,23 @@ class YouthBigLearning:
         #     "isTop": null,
         #     "score": null
         # }
+
+        return resp["result"]["list"]
+
+    """
+        爬取某一课程的完成情况
+    """
+    async def get_course_record(self, course_id):
+        params = {
+            "pageSize": 999,
+            "pageNum": 1,
+            "desc": "createTime",
+            "nid": "N000100110001",
+            "status": "已学习",
+            "course": course_id,
+            "accessToken": self.access_token
+        }
+        resp = requests.get(self.reader.read("query_all_courses"), params=params,
+                            headers=self.reader.read("login_headers")).json()
 
         return resp["result"]["list"]

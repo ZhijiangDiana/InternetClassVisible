@@ -14,6 +14,7 @@ class Member(Model):
     join_datetime = fields.DatetimeField(description="成员添加时间")
     name = fields.CharField(max_length=114, description="成员姓名")
     user_type = fields.CharField(max_length=45, description="成员类型")
+    email = fields.CharField(max_length=114, null=True, description="成员邮箱")
 
     organization = fields.ForeignKeyField("models.Organization", related_name="Organization")
 
@@ -36,7 +37,7 @@ class MemberCourse(Model):
     member = fields.ForeignKeyField('models.Member', related_name='Course')
     course = fields.ForeignKeyField('models.Course', related_name='Member')
 
-    finish_datetime = fields.DatetimeField(description="完成时间")
+    finish_datetime = fields.DatetimeField(null=True, description="完成时间")
 
     class Meta:
         unique_together = ('member', 'course')
