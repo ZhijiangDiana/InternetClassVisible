@@ -40,7 +40,7 @@ async def update_statistic_course_finish_rate(token: str):
 @internal.post("/record/refresh_running")
 async def refresh_running(token: str):
     if token == INTERNAL_REQUEST_TOKEN:
-        await RunningCourseService().refresh_running_course_finish_status()
+        await RunningCourseService().update_running_course()
         resp = normal_resp()
     else:
         resp = normal_resp(
