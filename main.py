@@ -7,8 +7,8 @@ import uvicorn
 from config import *
 from starlette.staticfiles import StaticFiles
 from tortoise.contrib.fastapi import register_tortoise
+from contextlib import asynccontextmanager
 
-from controller.internal import internal
 from controller.p_org import p_org
 from controller.record import record
 from controller.member import member
@@ -16,7 +16,7 @@ from controller.test import test
 from controller.course import course
 from controller.organization import organization
 from service.DataIn.InterfacePraparation import YouthBigLearning
-from service.GlobalTimer import GlobalTimer
+from service.GlobalTimer import timer
 from service.TotalCourseFinishStatistic import CalculateRateService
 
 app = FastAPI()
@@ -33,8 +33,15 @@ register_tortoise(
     config=TORTOISE_ORM
 )
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # 项目启动前要做的
+    timer()
+    yield
+    # 项目运行结束后后要做的
+
+
 if __name__ == '__main__':
-    GlobalTimer()
     if LOGIN_AT_STARTUP:
         youth_learning = YouthBigLearning()
 
