@@ -7,16 +7,6 @@ from entity.db_entity import *
 
 
 class CourseRateCalculateService:
-    __instance = None
-    __instance_lock = threading.Lock()
-
-    def __new__(cls):
-        with cls.__instance_lock:
-            if cls.__instance is None:
-                # 实例化对象
-                cls.__instance = super().__new__(cls)
-        return cls.__instance
-
     _finish_rate = {
         "org_rate": {
             # 支部编号: {课程号: 完成率}
@@ -44,14 +34,16 @@ class CourseRateCalculateService:
     # 正在进行的课程不参与学院总统计，也不对其完成率进行记录，仅在请求数据使时现场计算
 
     # 初始化排名名单
-    async def update_statistic(self):
-        async with self._finish_rate_lock:
-            self._finish_rate = await self._calculate_past_rate()
-        async with self._finish_rate_rank_lock:
-            self._finish_rate_rank = await self._calculate_past_rank()
+    @classmethod
+    async def update_statistic(cls):
+        async with cls._finish_rate_lock:
+            cls._finish_rate = await cls._calculate_past_rate()
+        async with cls._finish_rate_rank_lock:
+            cls._finish_rate_rank = await cls._calculate_past_rank()
 
     # 计算往期课程的完成率及排名
-    async def _calculate_past_rate(self):
+    @staticmethod
+    async def _calculate_past_rate():
         # 初始化变量
         finish_rate = {
             "org_rate": {},
@@ -84,48 +76,53 @@ class CourseRateCalculateService:
 
         return finish_rate
 
-    async def _calculate_past_rank(self):
+    @classmethod
+    async def _calculate_past_rank(cls):
         finish_rank = {}
         # 计算某次课程的排名
         past_courses = await Course.filter(end_datetime__lte=datetime.now())
         for course in past_courses:
             # 获取某课程所有支部完成率，并排序
             rates = {}
-            for key, value in self._finish_rate["org_rate"].items():
+            for key, value in cls._finish_rate["org_rate"].items():
                 if value.__contains__(course.id):
                     rates[key] = value[course.id]
             rank_list = sorted(rates.items(), key=lambda x: x[1], reverse=True)
             # 将排名名单写入排名榜
-            async with self._finish_rate_rank_list_lock:
-                self._finish_rate_rank_list[course.id] = rank_list
+            async with cls._finish_rate_rank_list_lock:
+                cls._finish_rate_rank_list[course.id] = rank_list
             # 将支部排名写入字典中
             for index, rank in enumerate(rank_list):
                 org_id = rank[0]
                 finish_rank[org_id] = {}
                 finish_rank[org_id][course.id] = index + 1
-        async with self._finish_rate_rank_lock:
-            self._finish_rate_rank_list = finish_rank
+        async with cls._finish_rate_rank_lock:
+            cls._finish_rate_rank_list = finish_rank
 
     # 获取某次课程中支部完成率
-    async def get_org_course_rate(self, org_id, course_id):
+    @classmethod
+    async def get_org_course_rate(cls, org_id, course_id):
         return {
             "org": await Organization.get(id=org_id),
-            "rate": self._finish_rate["org_rate"][org_id][course_id],
-            "rank": self._finish_rate_rank[org_id][course_id]
+            "rate": cls._finish_rate["org_rate"][org_id][course_id],
+            "rank": cls._finish_rate_rank[org_id][course_id]
         }
 
     # 获取某支部所有课程的完成率
-    async def get_org_records(self, org_id):
+    @classmethod
+    async def get_org_records(cls, org_id):
         return {
             "org": await Organization.get(id=org_id),
-            "rates": self._finish_rate["org_rate"][org_id],
-            "ranks": self._finish_rate_rank[org_id]
+            "rates": cls._finish_rate["org_rate"][org_id],
+            "ranks": cls._finish_rate_rank[org_id]
         }
 
     # 获取某次课程中学院完成率
-    async def get_p_org_course_rate(self, course_id):
-        return self._finish_rate["p_org_rate"][course_id]
+    @classmethod
+    async def get_p_org_course_rate(cls, course_id):
+        return cls._finish_rate["p_org_rate"][course_id]
 
     # 获取某次课程中支部完成率排名列表
-    async def get_org_rate_list(self, course_id):
-        return self._finish_rate_rank[course_id]
+    @classmethod
+    async def get_org_rate_list(cls, course_id):
+        return cls._finish_rate_rank[course_id]

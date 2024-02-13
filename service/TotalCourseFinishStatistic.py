@@ -13,16 +13,6 @@ from entity.db_entity import *
 
 # 计算所有课程中个人和支部的完成率及完成率排名
 class CalculateRateService:
-    __instance = None
-    __instance_lock = threading.Lock()
-
-    def __new__(cls):
-        with cls.__instance_lock:
-            if cls.__instance is None:
-                # 实例化对象
-                cls.__instance = super().__new__(cls)
-        return cls.__instance
-
     # 完成率名单对象
     _finish_rate = {
         # 初始化为时间戳原点
@@ -49,7 +39,8 @@ class CalculateRateService:
     _finish_rate_rank_lock = asyncio.Lock()
 
     # 获取某人完成情况原始数据
-    async def _get_mem_course(self, mem_id):
+    @staticmethod
+    async def _get_mem_course(mem_id):
         need_finish = await record_dao.get_courses_should_finish(mem_id)
         finished = await record_dao.get_courses_finished(mem_id)
 
@@ -58,11 +49,12 @@ class CalculateRateService:
             "finished": finished
         }
 
-    async def _update_member_rate(self, finish_rate):
+    @staticmethod
+    async def _update_member_rate(finish_rate):
         members = await Member.all()
         # 依次计算每个人的完成率并存入表中
         for member in members:
-            status = await self._get_mem_course(member.id)
+            status = await CalculateRateService._get_mem_course(member.id)
             need_finish = status["need_finish"]
             finished = status["finished"]
 
@@ -71,11 +63,12 @@ class CalculateRateService:
             if len(need_finish) != 0:
                 rate = len(finished) * 1.0 / len(need_finish)
             finish_rate["member_rate"][member.id] = rate
-        print(f"{id(self)}已在{datetime.now()}更新成员完成率名单")
+        print(f"已在{datetime.now()}更新成员完成率名单")
 
         return finish_rate
 
-    async def _update_org_rate(self, finish_rate):
+    @staticmethod
+    async def _update_org_rate(finish_rate):
         orgs = await Organization.all()
         # 依次计算每个支部的完成率并存入表中
         for org in orgs:
@@ -91,11 +84,12 @@ class CalculateRateService:
                 rate /= mem_cnt
             finish_rate["organization_rate"][org.id] = rate
 
-        print(f"{id(self)}已在{datetime.now()}更新支部完成率名单")
+        print(f"已在{datetime.now()}更新支部完成率名单")
 
         return finish_rate
 
-    async def _update_p_rate(self, finish_rate):
+    @staticmethod
+    async def _update_p_rate(finish_rate):
         # 计算光电学院总完成率并存入表中
         rate = 0.0
         org_cnt = 0
@@ -105,11 +99,12 @@ class CalculateRateService:
         if org_cnt > 0:
             rate /= org_cnt
         finish_rate["p_org_rate"] = rate
-        print(f"{id(self)}已在{datetime.now()}更新支部完成率名单")
+        print(f"已在{datetime.now()}更新学院完成率名单")
 
         return finish_rate
 
-    async def _update_finish_rate(self):
+    @classmethod
+    async def _update_finish_rate(cls):
         # 初始化完成率表
         finish_rate = {
             # 更新名单的更新时间
@@ -123,17 +118,18 @@ class CalculateRateService:
         }
 
         # 更新成员统计信息
-        finish_rate = await self._update_member_rate(finish_rate)
+        finish_rate = await cls._update_member_rate(finish_rate)
         # 更新支部统计信息
-        finish_rate = await self._update_org_rate(finish_rate)
+        finish_rate = await cls._update_org_rate(finish_rate)
         # 更新学院统计信息
-        finish_rate = await self._update_p_rate(finish_rate)
+        finish_rate = await cls._update_p_rate(finish_rate)
 
         # 新名单取代旧名单
-        async with self._finish_rate_lock:
-            self._finish_rate = finish_rate
+        async with cls._finish_rate_lock:
+            cls._finish_rate = finish_rate
 
-    async def _update_member_rank(self, finish_rate_rank, finish_rate):
+    @staticmethod
+    async def _update_member_rank(finish_rate_rank, finish_rate):
         # 个人在学院的排名
         # 使用sorted函数和lambda表达式按值排序，返回一个包含元组的列表
         finish_rate_sorted = sorted(finish_rate["member_rate"].items(), key=lambda x: x[1], reverse=True)
@@ -167,7 +163,8 @@ class CalculateRateService:
 
         return finish_rate_rank
 
-    async def _update_org_rank(self, finish_rate_rank, finish_rate):
+    @staticmethod
+    async def _update_org_rank(finish_rate_rank, finish_rate):
         # 使用sorted函数和lambda表达式按值排序，返回一个包含元组的列表
         finish_rate_sorted = sorted(finish_rate["organization_rate"].items(), key=lambda x: x[1], reverse=True)
         # 存储排名榜
@@ -182,7 +179,8 @@ class CalculateRateService:
 
         return finish_rate_rank
 
-    async def _update_rate_rank(self, finish_rate):
+    @classmethod
+    async def _update_rate_rank(cls, finish_rate):
         # 初始化排名表
         finish_rate_rank = {
             "refresh_time": datetime.now(),
@@ -199,72 +197,82 @@ class CalculateRateService:
             finish_rate_rank["org_rank"][org.id] = {}
 
         # 更新个人在支部、在学院的排名
-        finish_rate_rank = await self._update_member_rank(finish_rate_rank, finish_rate)
+        finish_rate_rank = await cls._update_member_rank(finish_rate_rank, finish_rate)
         # 更新支部在学院的排名
-        finish_rate_rank = await self._update_org_rank(finish_rate_rank, finish_rate)
+        finish_rate_rank = await cls._update_org_rank(finish_rate_rank, finish_rate)
 
-        async with self._finish_rate_rank_lock:
-            self._finish_rate_rank = finish_rate_rank
+        async with cls._finish_rate_rank_lock:
+            cls._finish_rate_rank = finish_rate_rank
 
     # 更新完成率名单对象和排名名单对象，定时任务60s执行一次
-    async def update_statistic(self):
-        await self._update_finish_rate()
-        async with self._finish_rate_lock:
-            finish_rate = copy.deepcopy(self._finish_rate)
-        await self._update_rate_rank(finish_rate)
+    @classmethod
+    async def update_statistic(cls):
+        await cls._update_finish_rate()
+        async with cls._finish_rate_lock:
+            finish_rate = copy.deepcopy(cls._finish_rate)
+        await cls._update_rate_rank(finish_rate)
 
+    # -----------
     # 对外接口部分
-    async def get_all_member_finish_rate(self):
-        async with self._finish_rate_lock:
-            refresh_time = copy.deepcopy(self._finish_rate["refresh_time"])
-            mems_finish_rate = copy.deepcopy(self._finish_rate["member_rate"])
-            return {
-                "refresh_time": refresh_time,
-                "member_rate": mems_finish_rate
-            }
+    # -----------
 
-    async def get_all_org_finish_rate(self):
-        async with self._finish_rate_lock:
-            refresh_time = copy.deepcopy(self._finish_rate["refresh_time"])
-            orgs_finish_rate = copy.deepcopy(self._finish_rate["organization_rate"])
-            return {
-                "refresh_time": refresh_time,
-                "organization_rate": orgs_finish_rate
-            }
+    @classmethod
+    async def get_all_member_finish_rate(cls):
+        async with cls._finish_rate_lock:
+            refresh_time = copy.deepcopy(cls._finish_rate["refresh_time"])
+            mems_finish_rate = copy.deepcopy(cls._finish_rate["member_rate"])
+        return {
+            "refresh_time": refresh_time,
+            "member_rate": mems_finish_rate
+        }
+
+    @classmethod
+    async def get_all_org_finish_rate(cls):
+        async with cls._finish_rate_lock:
+            refresh_time = copy.deepcopy(cls._finish_rate["refresh_time"])
+            orgs_finish_rate = copy.deepcopy(cls._finish_rate["organization_rate"])
+        return {
+            "refresh_time": refresh_time,
+            "organization_rate": orgs_finish_rate
+        }
 
     # 获取个人所有课程的完成率
-    async def get_member_finish_rate(self, mem_id):
-        async with self._finish_rate_lock:
-            refresh_time = copy.deepcopy(self._finish_rate["refresh_time"])
-            mem_rate = copy.deepcopy(self._finish_rate["member_rate"][mem_id])
-            return {
-                "refresh_time": refresh_time,
-                "member_rate": mem_rate
-            }
+    @classmethod
+    async def get_member_finish_rate(cls, mem_id):
+        async with cls._finish_rate_lock:
+            refresh_time = copy.deepcopy(cls._finish_rate["refresh_time"])
+            mem_rate = copy.deepcopy(cls._finish_rate["member_rate"][mem_id])
+        return {
+            "refresh_time": refresh_time,
+            "member_rate": mem_rate
+        }
 
     # 获取支部所有课程的完成率
-    async def get_org_finish_rate(self, org_id):
-        async with self._finish_rate_lock:
-            refresh_time = copy.deepcopy(self._finish_rate["refresh_time"])
-            org_rate = copy.deepcopy(self._finish_rate["organization_rate"][org_id])
-            return {
-                "refresh_time": refresh_time,
-                "organization_rate": org_rate
-            }
+    @classmethod
+    async def get_org_finish_rate(cls, org_id):
+        async with cls._finish_rate_lock:
+            refresh_time = copy.deepcopy(cls._finish_rate["refresh_time"])
+            org_rate = copy.deepcopy(cls._finish_rate["organization_rate"][org_id])
+        return {
+            "refresh_time": refresh_time,
+            "organization_rate": org_rate
+        }
 
     # 获取学院所有课程的完成率
-    async def get_p_finish_rate(self):
-        async with self._finish_rate_lock:
-            refresh_time = copy.deepcopy(self._finish_rate["refresh_time"])
-            p_rate = copy.deepcopy(self._finish_rate["p_org_rate"])
-            return {
-                "refresh_time": refresh_time,
-                "p_finish_rate": p_rate
-            }
+    @classmethod
+    async def get_p_finish_rate(cls):
+        async with cls._finish_rate_lock:
+            refresh_time = copy.deepcopy(cls._finish_rate["refresh_time"])
+            p_rate = copy.deepcopy(cls._finish_rate["p_org_rate"])
+        return {
+            "refresh_time": refresh_time,
+            "p_finish_rate": p_rate
+        }
 
     # 获取个人所有课程的完成情况
-    async def get_finish_status(self, mem_id):
-        status = await self._get_mem_course(mem_id)
+    @classmethod
+    async def get_finish_status(cls, mem_id):
+        status = await cls._get_mem_course(mem_id)
         need_finish = status["need_finish"]
         finished = status["finished"]
         # print(len(need_finish), need_finish)
@@ -276,35 +284,38 @@ class CalculateRateService:
         return need_finish
 
     # 获取个人全部课程中在学院和支部的排名
-    async def get_member_rate_rank(self, mem_id):
-        async with self._finish_rate_rank_lock:
-            refresh_time = copy.deepcopy(self._finish_rate_rank["refresh_time"])
-            rank_in_org = copy.deepcopy(self._finish_rate_rank["member_rank"][mem_id]["rank_in_org"])
-            rank_in_p_org = copy.deepcopy(self._finish_rate_rank["member_rank"][mem_id]["rank_in_p_org"])
-            return {
-                "refresh_time": refresh_time,
-                "rank_in_org": rank_in_org,
-                "rank_in_p_org": rank_in_p_org
-            }
+    @classmethod
+    async def get_member_rate_rank(cls, mem_id):
+        async with cls._finish_rate_rank_lock:
+            refresh_time = copy.deepcopy(cls._finish_rate_rank["refresh_time"])
+            rank_in_org = copy.deepcopy(cls._finish_rate_rank["member_rank"][mem_id]["rank_in_org"])
+            rank_in_p_org = copy.deepcopy(cls._finish_rate_rank["member_rank"][mem_id]["rank_in_p_org"])
+        return {
+            "refresh_time": refresh_time,
+            "rank_in_org": rank_in_org,
+            "rank_in_p_org": rank_in_p_org
+        }
 
     # 获取支部全部课程中在学院的排名
-    async def get_org_rate_rank(self, org_id):
-        async with self._finish_rate_rank_lock:
-            refresh_time = copy.deepcopy(self._finish_rate_rank["refresh_time"])
-            rank_in_p_org = copy.deepcopy(self._finish_rate_rank["org_rank"][org_id]["rank_in_p_org"])
-            return {
-                "refresh_time": refresh_time,
-                "rank_in_p_org": rank_in_p_org
-            }
+    @classmethod
+    async def get_org_rate_rank(cls, org_id):
+        async with cls._finish_rate_rank_lock:
+            refresh_time = copy.deepcopy(cls._finish_rate_rank["refresh_time"])
+            rank_in_p_org = copy.deepcopy(cls._finish_rate_rank["org_rank"][org_id]["rank_in_p_org"])
+        return {
+            "refresh_time": refresh_time,
+            "rank_in_p_org": rank_in_p_org
+        }
 
     # 获取支部内个人排名列表
-    async def get_org_member_rank_list(self, org_id):
+    @classmethod
+    async def get_org_member_rank_list(cls, org_id):
         members = await Member.filter(organization_id=org_id)
-        async with self._finish_rate_rank_lock:
+        async with cls._finish_rate_rank_lock:
             rank_dict = {}
-            refresh_time = copy.deepcopy(self._finish_rate["refresh_time"])
+            refresh_time = copy.deepcopy(cls._finish_rate["refresh_time"])
             for member in members:
-                rank_dict[member.id] = copy.deepcopy(self._finish_rate["member_rate"][member.id])
+                rank_dict[member.id] = copy.deepcopy(cls._finish_rate["member_rate"][member.id])
         rank = sorted(rank_dict.items(), key=lambda x: x[1], reverse=True)
         # print(rank)
 
@@ -323,10 +334,11 @@ class CalculateRateService:
         }
 
     # 获取学院内个人排名列表
-    async def get_p_member_rank_list(self):
-        async with self._finish_rate_rank_lock:
-            refresh_time = copy.deepcopy(self._finish_rate["refresh_time"])
-            rank_list = copy.deepcopy(self._finish_rate_rank["member_rank_list"])
+    @classmethod
+    async def get_p_member_rank_list(cls):
+        async with cls._finish_rate_rank_lock:
+            refresh_time = copy.deepcopy(cls._finish_rate["refresh_time"])
+            rank_list = copy.deepcopy(cls._finish_rate_rank["member_rank_list"])
 
         rank_with_mem_info = []
         for entry in rank_list:
@@ -342,10 +354,11 @@ class CalculateRateService:
         }
 
     # 获取学院内支部排名列表
-    async def get_p_org_rank_list(self):
-        async with self._finish_rate_rank_lock:
-            refresh_time = copy.deepcopy(self._finish_rate["refresh_time"])
-            rank_list = copy.deepcopy(self._finish_rate_rank["organization_rank_list"])
+    @classmethod
+    async def get_p_org_rank_list(cls):
+        async with cls._finish_rate_rank_lock:
+            refresh_time = copy.deepcopy(cls._finish_rate["refresh_time"])
+            rank_list = copy.deepcopy(cls._finish_rate_rank["organization_rank_list"])
 
         rank_with_mem_info = []
         for entry in rank_list:

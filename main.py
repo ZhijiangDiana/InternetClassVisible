@@ -26,7 +26,6 @@ app.include_router(course, prefix="/course", tags=["course_api"])
 app.include_router(organization, prefix="/organization", tags=["organization_api"])
 app.include_router(member, prefix="/member", tags=["member_api"])
 app.include_router(record, prefix="/finish_record", tags=["finish_record_api"])
-app.include_router(internal, prefix="/internal", tags=["internal_api"])
 app.include_router(p_org, prefix="/p_org", tags=["p_org_api"])
 
 register_tortoise(
@@ -35,9 +34,7 @@ register_tortoise(
 )
 
 if __name__ == '__main__':
-    # 实例化所有业务
     GlobalTimer()
-    CalculateRateService()
     if LOGIN_AT_STARTUP:
         youth_learning = YouthBigLearning()
 

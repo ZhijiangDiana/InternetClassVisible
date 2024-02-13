@@ -1,11 +1,6 @@
-import asyncio
 import threading
 from time import sleep
-from config import INTERNAL_REQUEST_TOKEN, SERVER_IP, SERVER_PORT
-
-import requests
-
-from service.TotalCourseFinishStatistic import CalculateRateService
+from controller.internal import *
 
 
 class GlobalTimer:
@@ -29,25 +24,21 @@ class GlobalTimer:
         return cls.__instance
 
     # 当前周期是60s
-    def _timer_func(self):
+    async def _timer_func(self):
         # 单次任务
         # 初始化正在进行的课程
-        requests.post(url=f"http://{SERVER_IP}:{SERVER_PORT}/internal/record/initialize_running",
-                      params={'token': INTERNAL_REQUEST_TOKEN})
+        await initialize_running()
         # 更新课程完成率名单
-        requests.put(url=f"http://{SERVER_IP}:{SERVER_PORT}/internal/statistic/course/finish_rate",
-                     params={'token': INTERNAL_REQUEST_TOKEN})
+        await update_statistic_course_finish_rate()
         # 更新总体完成率名单
-        requests.put(url=f"http://{SERVER_IP}:{SERVER_PORT}/internal/statistic/finish_rate",
-                     params={'token': INTERNAL_REQUEST_TOKEN})
+        await update_statistic_member_finish_rate()
 
         # 多次任务
         cnt = 0
         while True:
             if cnt % 30 == 0:
                 # 刷新正在进行的学习
-                requests.post(url=f"http://{SERVER_IP}:{SERVER_PORT}/internal/record/refresh_running",
-                              params={'token': INTERNAL_REQUEST_TOKEN})
+                await refresh_running()
             sleep(1)
             if cnt == 60:
                 cnt = 0
