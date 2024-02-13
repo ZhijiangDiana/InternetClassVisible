@@ -250,6 +250,7 @@ class CalculateRateService:
     # 获取支部所有课程的完成率
     @classmethod
     async def get_org_finish_rate(cls, org_id):
+        print(cls._finish_rate)
         async with cls._finish_rate_lock:
             refresh_time = copy.deepcopy(cls._finish_rate["refresh_time"])
             org_rate = copy.deepcopy(cls._finish_rate["organization_rate"][org_id])

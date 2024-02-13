@@ -1,17 +1,17 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from controller.internal import *
-
+from service.Background import *
 
 scheduler = AsyncIOScheduler()
-scheduler.add_job(refresh_running, "interval", minutes=1, args=[""])
+scheduler.add_job(refresh_running, "interval", minutes=1)
 
-def timer():
+
+async def timer():
     # 单次任务
     # 初始化正在进行的课程
-    initialize_running()
+    await initialize_running()
     # 更新课程完成率名单
-    update_statistic_course_finish_rate()
+    await update_statistic_course_finish_rate()
     # 更新总体完成率名单
-    update_statistic_member_finish_rate()
+    await update_statistic_member_finish_rate()
 
     scheduler.start()

@@ -19,7 +19,16 @@ from service.DataIn.InterfacePraparation import YouthBigLearning
 from service.GlobalTimer import timer
 from service.TotalCourseFinishStatistic import CalculateRateService
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # 项目启动前要做的
+    await asyncio.create_task(timer())
+    yield
+    # 项目运行结束后后要做的
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(test, prefix="/test", tags=["test_api"])
 app.include_router(course, prefix="/course", tags=["course_api"])
@@ -32,14 +41,6 @@ register_tortoise(
     app=app,
     config=TORTOISE_ORM
 )
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # 项目启动前要做的
-    timer()
-    yield
-    # 项目运行结束后后要做的
-
 
 if __name__ == '__main__':
     if LOGIN_AT_STARTUP:

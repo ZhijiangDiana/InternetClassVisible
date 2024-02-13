@@ -43,16 +43,15 @@ class RunningCourseService:
 
     # 本业务的所有定时项目，30s
     @classmethod
-    async def update_running_course(self):
-        await self._update_running_course_finish_status()
-        await self._update_running_course_statistic()
-
+    async def update_running_course(cls):
+        await cls._update_running_course_finish_status()
+        await cls._update_running_course_statistic()
 
     # 爬取一次正在进行的课程的完成情况，需要添加到定时器业务中
     @classmethod
-    async def _update_running_course_finish_status(self):
+    async def _update_running_course_finish_status(cls):
         youth_big_learning = YouthBigLearning()
-        for course in self._running_course.values():
+        for course in cls._running_course.values():
             # {
             #     "id": "38718",
             #     "openid": null,
@@ -78,14 +77,14 @@ class RunningCourseService:
                         print(f"{record["cardNo"]}同学（{record["id"]}）学习了{record["course"]}（{course.id}）课程")
                 else:
                     print(f"不存在{record["cardNo"]}同学（{record["id"]}）")
-            print(f"更新了{len(self._running_course)}个正在进行课程的学习记录")
+            print(f"更新了{len(cls._running_course)}个正在进行课程的学习记录")
 
     # 刷新完成率和排名
     @classmethod
-    async def _update_running_course_statistic(self):
+    async def _update_running_course_statistic(cls):
         statistic = {}
         orgs = await Organization.all()
-        for course in self._running_course.values():
+        for course in cls._running_course.values():
             statistic[course.id] = {}
             # 完成率
             statistic[course.id]["rate"] = {}
@@ -111,31 +110,30 @@ class RunningCourseService:
                 statistic["rank"][item[0]] = item[1]
 
         # 回写并覆盖原有数据
-        self._running_course_statistic = statistic
-
+        cls._running_course_statistic = statistic
 
     # 课程结束时的回调
     # TODO 需要添加到计划任务中
     @classmethod
-    async def handle_running_course_end(self, course_id):
+    async def handle_running_course_end(cls, course_id):
         await asyncio.sleep(5)
         # 最后一次刷新该课程的完成情况
-        await self.update_running_course()
+        await cls.update_running_course()
         # 在名单中删除该课程
-        self._running_course.__delitem__(course_id)
-        self._running_course_statistic.__delitem__(course_id)
+        cls._running_course.__delitem__(course_id)
+        cls._running_course_statistic.__delitem__(course_id)
         # TODO 通知CourseFinishStatistic和TotalCourseFinishStatistic业务更新完成率列表
 
     # 获取支部完成率
     @classmethod
-    async def get_org_statistic(self, org_id, course_id):
+    async def get_org_statistic(cls, org_id, course_id):
         return {
             "org_id": org_id,
-            "rate": self._running_course_statistic[course_id]["rate"][org_id],
-            "rank": self._running_course_statistic[course_id]["rank"][org_id]
+            "rate": cls._running_course_statistic[course_id]["rate"][org_id],
+            "rank": cls._running_course_statistic[course_id]["rank"][org_id]
         }
 
     # 获取完成率排名榜
     @classmethod
-    async def get_rank_list(self, course_id):
-        return self._running_course_statistic[course_id]["rank_list"]
+    async def get_rank_list(cls, course_id):
+        return cls._running_course_statistic[course_id]["rank_list"]
