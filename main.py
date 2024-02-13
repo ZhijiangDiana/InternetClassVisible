@@ -16,17 +16,16 @@ from controller.test import test
 from controller.course import course
 from controller.organization import organization
 from service.DataIn.InterfacePraparation import YouthBigLearning
-from service.GlobalTimer import timer
+from service.GlobalTimer import scheduler
 from service.TotalCourseFinishStatistic import CalculateRateService
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # 项目启动前要做的
-    await asyncio.create_task(timer())
+    scheduler.start()
     yield
     # 项目运行结束后后要做的
-
 
 app = FastAPI(lifespan=lifespan)
 
@@ -41,6 +40,7 @@ register_tortoise(
     app=app,
     config=TORTOISE_ORM
 )
+
 
 if __name__ == '__main__':
     if LOGIN_AT_STARTUP:
