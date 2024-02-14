@@ -36,10 +36,12 @@ class CourseRateCalculateService:
     # 初始化排名名单
     @classmethod
     async def update_statistic(cls):
+        print("开始更新课程名单")
         async with cls._finish_rate_lock:
             cls._finish_rate = await cls._calculate_past_rate()
         async with cls._finish_rate_rank_lock:
             cls._finish_rate_rank = await cls._calculate_past_rank()
+        print("更新课程名单完成")
 
     # 计算往期课程的完成率及排名
     @staticmethod
@@ -96,8 +98,7 @@ class CourseRateCalculateService:
                 org_id = rank[0]
                 finish_rank[org_id] = {}
                 finish_rank[org_id][course.id] = index + 1
-        async with cls._finish_rate_rank_lock:
-            cls._finish_rate_rank_list = finish_rank
+        cls._finish_rate_rank_list = finish_rank
 
     # 获取某次课程中支部完成率
     @classmethod

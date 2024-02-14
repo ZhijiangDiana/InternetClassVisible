@@ -24,6 +24,7 @@ class RunningCourseService:
     # 获取最新一期课程
     @classmethod
     async def get_running_course(cls):
+        print("开始更新正在进行课程")
         youth_big_learning = YouthBigLearning()
         courses = await youth_big_learning.get_all_courses()
         now = datetime.now()
@@ -40,6 +41,7 @@ class RunningCourseService:
             else:
                 added_course = await Course.filter(id=course["id"])
             cls._running_course[course["id"]] = added_course
+        print("更新正在进行课程完成")
 
     # 本业务的所有定时项目，30s
     @classmethod
@@ -116,7 +118,6 @@ class RunningCourseService:
     # TODO 需要添加到计划任务中
     @classmethod
     async def handle_running_course_end(cls, course_id):
-        await asyncio.sleep(5)
         # 最后一次刷新该课程的完成情况
         await cls.update_running_course()
         # 在名单中删除该课程

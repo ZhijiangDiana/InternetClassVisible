@@ -2,11 +2,11 @@ import asyncio
 
 from service.CourseFinishStatistic import CourseRateCalculateService
 from service.RunningCourse import RunningCourseService
-from service.TotalCourseFinishStatistic import CalculateRateService
+from service.TotalCourseFinishStatistic import TotalCourseRateService
 
 
 async def update_statistic_member_finish_rate():
-    await CalculateRateService.update_statistic()
+    await TotalCourseRateService.update_statistic()
 
 
 async def update_statistic_course_finish_rate():

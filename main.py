@@ -17,7 +17,7 @@ from controller.course import course
 from controller.organization import organization
 from service.DataIn.InterfacePraparation import YouthBigLearning
 from service.GlobalTimer import scheduler
-from service.TotalCourseFinishStatistic import CalculateRateService
+from service.TotalCourseFinishStatistic import TotalCourseRateService
 
 
 @asynccontextmanager
