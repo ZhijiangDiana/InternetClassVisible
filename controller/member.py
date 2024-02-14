@@ -3,9 +3,12 @@ from datetime import datetime
 
 from fastapi import APIRouter
 from pydantic import BaseModel, validator
+from starlette.responses import Response
 from tortoise.exceptions import DoesNotExist
 
 from dao import record_dao
+from entity.input_model import *
+from entity.output_model import *
 from entity.response import normal_resp
 from entity.db_entity import *
 from service.DataIn.InterfacePraparation import YouthBigLearning
@@ -68,30 +71,26 @@ async def get_all():
 # 根据支部列出其下属的所有成员
 @member.get("/search/org/{org_id}")
 async def get_by_org(org_id: str):
-    is_exist = await Organization.exists(id=org_id)
-    if not is_exist:
-        return normal_resp(
-            message="查询结果为空"
-        )
+    # 检验支部是否存在
+    org_id = OrgValidator(org_id=org_id).org_id
 
-    members = await Member.filter(organization_id=org_id)
-    org = await Organization.get(id=org_id)
+    # 查询并返回
     resp = normal_resp(result={
-        "organization": org,
-        "cnt": len(members),
-        "members": members
+        "cnt": 0,
+        "members": []
     })
+    members = await Member.filter(organization_id=org_id).prefetch_related("organization")
+    for member in members:
+        resp.result["members"].append(MemberOut(member=member, organization=member.organization))
+
     return resp
 
 
 # 根据id查找成员
 @member.get("/search/{mem_id}")
 async def get_by_id(mem_id: int):
-    is_exist = await Member.exists(id=mem_id)
-    if not is_exist:
-        return normal_resp(
-            message="查询结果为空"
-        )
+    # 检查成员是否存在
+    mem_id = MemberValidator(mem_id=mem_id).mem_id
 
     mem = await Member.get(id=mem_id)
     org = await mem.organization.get()
@@ -106,9 +105,11 @@ async def get_by_id(mem_id: int):
 # 统计某个成员的学习情况，返回其id，完成率，详细完成情况
 @member.get("/statistic/record/{mem_id}")
 async def get_course_finish_statistic(mem_id: int):
-    calculate_service = CalculateRateService()
-    rate = await calculate_service.get_member_finish_rate(mem_id)
-    status = await calculate_service.get_finish_status(mem_id)
+    # 检查成员是否存在
+    mem_id = MemberValidator(mem_id=mem_id).mem_id
+
+    rate = await CalculateRateService.get_member_finish_rate(mem_id)
+    status = await CalculateRateService.get_finish_status(mem_id)
 
     return normal_resp(result={
         "refresh_time": rate["refresh_time"],
@@ -121,9 +122,11 @@ async def get_course_finish_statistic(mem_id: int):
 # 统计某个成员的总完成率和排名
 @member.get("/statistic/rank/all/{mem_id}")
 async def get_member_rank(mem_id: int):
-    calculate_service = CalculateRateService()
-    rate = await calculate_service.get_member_finish_rate(mem_id)
-    rank = await calculate_service.get_member_rate_rank(mem_id)
+    # 检查成员是否存在
+    mem_id = MemberValidator(mem_id=mem_id).mem_id
+
+    rate = await CalculateRateService.get_member_finish_rate(mem_id)
+    rank = await CalculateRateService.get_member_rate_rank(mem_id)
 
     return normal_resp(result={
         "refresh_time": rate["refresh_time"],
@@ -132,3 +135,5 @@ async def get_member_rank(mem_id: int):
         "org_rank": rank["rank_in_org"],
         "p_org_rank": rank["rank_in_p_org"],
     })
+
+#
