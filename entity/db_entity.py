@@ -34,8 +34,8 @@ class Course(Model):
 
 
 class MemberCourse(Model):
-    member = fields.ForeignKeyField('models.Member', related_name='Course')
-    course = fields.ForeignKeyField('models.Course', related_name='Member')
+    member = fields.ForeignKeyField('models.Member', related_name='Member')
+    course = fields.ForeignKeyField('models.Course', related_name='Course')
 
     finish_datetime = fields.DatetimeField(null=True, description="完成时间")
 
