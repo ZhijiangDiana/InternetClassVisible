@@ -31,3 +31,7 @@ ENVIRONMENT = "default"
 TIMEZONE = "Asia/Shanghai"
 
 INTERNAL_REQUEST_TOKEN = "1145141919810"
+
+# 邮件相关
+SENDER_EMAIL = "1483823709@qq.com"
+SENDER_PASSWORD = "hirzwvgpzsxfihec"

@@ -22,6 +22,7 @@ class RunningCourseService:
     }
 
     # 获取最新一期课程
+    # TODO 应该改成计划循环任务，定时刷新正在进行课表
     @classmethod
     async def get_running_course(cls):
         print("开始更新正在进行课程")
@@ -138,3 +139,18 @@ class RunningCourseService:
     @classmethod
     async def get_rank_list(cls, course_id):
         return cls._running_course_statistic[course_id]["rank_list"]
+
+    @classmethod
+    async def get_finished_smart_asses(cls, course_id, org_id):
+        finished_members = await Member.filter(
+            id__in=MemberCourse.filter(course_id=course_id).values('member_id'),
+            organization_id=org_id
+        )
+        return finished_members
+
+    @classmethod
+    async def get_not_finished_bitches(cls, course_id, org_id):
+        members = await Member.filter()
+        finished_members = await cls.get_finished_smart_asses(course_id, org_id)
+        return list(set(members) - set(finished_members))
+
