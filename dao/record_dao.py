@@ -16,8 +16,8 @@ async def get_courses_should_finish(mem_id):
 
 
 async def get_courses_finished(mem_id):
-    return await MemberCourse.filter(member_id=mem_id).prefetch_related("member", "course").\
-                    values("course_id", "course__type", "course__title", "course__start_datetime", "course__end_datetime", "course__cover", "course__uri")
+    return await (Course.filter(finish_member=mem_id).prefetch_related('finish_member')
+                  .values('id', 'type', 'title', 'start_datetime', 'end_datetime', 'cover', 'uri'))
 
 
 async def get_org_records(org_id, course_id):
