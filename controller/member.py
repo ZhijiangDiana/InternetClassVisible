@@ -12,7 +12,7 @@ from entity.output_model import *
 from entity.response import normal_resp
 from entity.db_entity import *
 from service.DataIn.InterfacePraparation import YouthBigLearning
-from service.TotalCourseFinishStatistic import CalculateRateService
+from service.TotalCourseFinishStatistic import TotalCourseRateService
 
 member = APIRouter()
 
@@ -108,8 +108,8 @@ async def get_course_finish_statistic(mem_id: int):
     # 检查成员是否存在
     mem_id = MemberValidator(mem_id=mem_id).mem_id
 
-    rate = await CalculateRateService.get_member_finish_rate(mem_id)
-    status = await CalculateRateService.get_finish_status(mem_id)
+    rate = await TotalCourseRateService.get_member_finish_rate(mem_id)
+    status = await TotalCourseRateService.get_finish_status(mem_id)
 
     return normal_resp(result={
         "refresh_time": rate["refresh_time"],
@@ -125,8 +125,8 @@ async def get_member_rank(mem_id: int):
     # 检查成员是否存在
     mem_id = MemberValidator(mem_id=mem_id).mem_id
 
-    rate = await CalculateRateService.get_member_finish_rate(mem_id)
-    rank = await CalculateRateService.get_member_rate_rank(mem_id)
+    rate = await TotalCourseRateService.get_member_finish_rate(mem_id)
+    rank = await TotalCourseRateService.get_member_rate_rank(mem_id)
 
     return normal_resp(result={
         "refresh_time": rate["refresh_time"],

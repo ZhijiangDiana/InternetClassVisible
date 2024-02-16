@@ -12,7 +12,7 @@ from entity.db_entity import *
 
 
 # 计算所有课程中个人和支部的完成率及完成率排名
-class CalculateRateService:
+class TotalCourseRateService:
     # 完成率名单对象
     _finish_rate = {
         # 初始化为时间戳原点
@@ -54,7 +54,7 @@ class CalculateRateService:
         members = await Member.all()
         # 依次计算每个人的完成率并存入表中
         for member in members:
-            status = await CalculateRateService._get_mem_course(member.id)
+            status = await TotalCourseRateService._get_mem_course(member.id)
             need_finish = status["need_finish"]
             finished = status["finished"]
 
@@ -207,10 +207,12 @@ class CalculateRateService:
     # 更新完成率名单对象和排名名单对象，定时任务60s执行一次
     @classmethod
     async def update_statistic(cls):
+        print("开始更新总体名单和排名")
         await cls._update_finish_rate()
         async with cls._finish_rate_lock:
             finish_rate = copy.deepcopy(cls._finish_rate)
         await cls._update_rate_rank(finish_rate)
+        print("更新总体名单和排名完成")
 
     # -----------
     # 对外接口部分

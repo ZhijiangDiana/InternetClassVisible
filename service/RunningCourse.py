@@ -22,8 +22,10 @@ class RunningCourseService:
     }
 
     # 获取最新一期课程
+    # TODO 应该改成计划循环任务，定时刷新正在进行课表
     @classmethod
     async def get_running_course(cls):
+        print("开始更新正在进行课程")
         youth_big_learning = YouthBigLearning()
         courses = await youth_big_learning.get_all_courses()
         now = datetime.now()
@@ -40,6 +42,7 @@ class RunningCourseService:
             else:
                 added_course = await Course.filter(id=course["id"])
             cls._running_course[course["id"]] = added_course
+        print("更新正在进行课程完成")
 
     # 本业务的所有定时项目，30s
     @classmethod
@@ -116,7 +119,6 @@ class RunningCourseService:
     # TODO 需要添加到计划任务中
     @classmethod
     async def handle_running_course_end(cls, course_id):
-        await asyncio.sleep(5)
         # 最后一次刷新该课程的完成情况
         await cls.update_running_course()
         # 在名单中删除该课程
@@ -137,3 +139,18 @@ class RunningCourseService:
     @classmethod
     async def get_rank_list(cls, course_id):
         return cls._running_course_statistic[course_id]["rank_list"]
+
+    @classmethod
+    async def get_finished_smart_asses(cls, course_id, org_id):
+        finished_members = await Member.filter(
+            id__in=MemberCourse.filter(course_id=course_id).values('member_id'),
+            organization_id=org_id
+        )
+        return finished_members
+
+    @classmethod
+    async def get_not_finished_bitches(cls, course_id, org_id):
+        members = await Member.filter()
+        finished_members = await cls.get_finished_smart_asses(course_id, org_id)
+        return list(set(members) - set(finished_members))
+

@@ -18,6 +18,8 @@ import numpy as np
 import pandas as pd
 import time
 
+from ai.captcha_recognition.captcha import captchaRecog
+
 
 # template: https://qcsh.h5yunban.com/youth-learning/cgi-bin/branch-api/course/statis/v3?nid=N000100110001
 # &beginCourse=C1049&endCourse=C1055&accessToken=3614061B-3F20-4C68-8BB9-35DAF7D8BB1F
@@ -41,14 +43,14 @@ class MailManager:
         self.distribute.sendmail(user, target_email_account, body.as_string())
 
 
-class Base64ImageParser:
-    def __init__(self, ori_code):
-        source_code = ori_code.replace("data:image/png;base64,", "")
-        self.avatar_bytes = base64.b64decode(source_code)
-
-    def parse(self):
-        with open("cap.png", "wb+") as f:
-            f.write(self.avatar_bytes)
+# class Base64ImageParser:
+#     def __init__(self, ori_code):
+#         source_code = ori_code.replace("data:image/png;base64,", "")
+#         self.avatar_bytes = base64.b64decode(source_code)
+#
+#     def parse(self):
+#         with open("cap.png", "wb+") as f:
+#             f.write(self.avatar_bytes)
 
 
 class DoubtfulJsonReader:
@@ -77,7 +79,7 @@ class YouthBigLearning:
     def __new__(cls, json_file_path="service/DataIn/prop.json"):
         with cls.__lock:
             if cls.__instance is None:
-                print('new successfully')
+                # print('new successfully')
                 cls.__instance = super().__new__(cls)
 
                 # todo 短时间使用还可以，长时间跑的话需要开一个线程维护登陆信息
@@ -109,26 +111,30 @@ class YouthBigLearning:
             captcha_url = resp.json()["result"]['base64']
             # 获取验证码id信息(用于提交表单)
             captcha_id = resp.json()["result"]["id"]
-            # 生成验证码解析器
-            parser = Base64ImageParser(captcha_url)
-            # 解析验证码，保存到本地"cap.png"
-            parser.parse()
+            # print(captcha_b64)
+            # 将验证码识别为字符串（律师函警告
+            res = captchaRecog(captcha_url)
+            print(f"识别出的验证码是{res}")
             # 获取登录验证表单数据
             data = {"account": self.reader.read("account"),
                     "password": self.reader.read("account_password"),
                     "captchaId": captcha_id,
                     # 不用云打码了，反正这个请求对时间要求也不是很急
-                    "captcha": input("请输入同级目录下cap.png中的验证码值>>")
+                    # "captcha": input("请输入同级目录下cap.png中的验证码值>>")
+                    "captcha": res
                     }
             # 获取登录响应信息
             # pay_load传参方式，data形参需要传入字符串
             login_info = requests.post(login_url, headers=post_headers, data=json.dumps(data))
-            print(login_info.json())
+            # print(login_info.json())
             statusCode = login_info.json()["status"]
 
             # 提示错误信息
             if login_info.json()["message"] is not None:
                 print(login_info.json()["message"])
+                time.sleep(3)
+            else:
+                print("登录成功")
 
         # 获取对验证至关重要的accessToken参数，accessToken有效时长1小时
         self.access_token = login_info.json()["result"]["accessToken"]

@@ -45,7 +45,7 @@ class CNN(nn.Module):
 cnn = CNN()
 cnn.eval()
 print("loading captcha recognition model weight...")
-cnn.load_state_dict(torch.load('captcha_recog_model_weight.pt', map_location=torch.device('cpu')))
+cnn.load_state_dict(torch.load('ai/captcha_recognition/captcha_recog_model_weight.pt', map_location=torch.device('cpu')))
 
 
 def captchaRecog(img_base64):

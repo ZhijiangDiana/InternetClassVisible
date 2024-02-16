@@ -1,6 +1,7 @@
 import re
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
+from pydantic.v1 import validator
 
 from entity.db_entity import *
 
@@ -37,6 +38,6 @@ class EmailValidator(BaseModel):
 
     @validator("email")
     def validate_email(self, email):
-        if not re.match("\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}", email):
+        if not re.match(r"\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}", email):
             raise ValueError("输入邮箱不合法")
 
