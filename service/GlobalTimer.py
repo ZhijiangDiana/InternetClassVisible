@@ -1,5 +1,6 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from service.Background import *
+from service.SemesterStatistic import SemesterStatistic
 from tortoise import Tortoise
 from config import TORTOISE_ORM
 import datetime
@@ -15,6 +16,9 @@ async def initialize():
     await update_statistic_course_finish_rate()
     # 更新总体完成率名单
     await update_statistic_member_finish_rate()
+
+    # 初始化学期数据
+    await SemesterStatistic.initSemesterStatistic()
 
     await Tortoise.close_connections()
 

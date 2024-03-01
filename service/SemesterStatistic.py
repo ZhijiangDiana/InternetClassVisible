@@ -2,23 +2,19 @@ import asyncio
 from abc import ABC, abstractmethod
 import datetime
 from typing import Dict, List, Tuple, Union
-from collections import Counter
+from collections import Counter, OrderedDict
 
 from entity.db_entity import *
 
 
 class SemesterStatistic(ABC):
-    # 学期: [学生id, 完成率] 按完成率排序
-    _stuFinishRate: Dict[str, List[List[Union[int, float]]]] = dict()
+    # 学期: {学生id: 完成率} 按完成率排序
+    _stuFinishRate: Dict[str, Union[OrderedDict[int, float], Dict[int, int]]] = dict()
     _stuFinishRateLock = asyncio.Lock()
 
-    # 学期: [支部编号, 完成率] 按完成率排序
-    _orgFinishRate: Dict[str, List[List[Union[str, float]]]] = dict()
+    # 学期: {支部编号: 完成率} 按完成率排序
+    _orgFinishRate: Dict[str, Union[OrderedDict[int, float], Dict[int, int]]] = dict()
     _orgFinishRateLock = asyncio.Lock()
-
-    # 正在进行的学期数据格式
-    # 正在进行的学期: {学生id: 完成次数}
-    # 正在进行的学期: {支部编号: 完成次数}
 
     # 上次更新的完成记录中最晚一条的时间
     _refreshTime = datetime.datetime(2000, 1, 1)
@@ -110,7 +106,7 @@ class SemesterStatistic(ABC):
     # 初始化完成率
     @classmethod
     async def initSemesterStatistic(cls) -> None:
-        # 初始化过程_refreshTime不用做数据库查询, 只用于指示最近的学期
+        # 初始化过程_refreshTime不用作数据库查询, 只用于指示最近的学期
         async with cls._refreshTimeLock:
             cls._refreshTime = max(await MemberCourse.all().values_list("finish_datetime"))[0]
         async with cls._stuFinishRateLock:
@@ -120,24 +116,22 @@ class SemesterStatistic(ABC):
 
     # 初始化所有学期的学生完成率
     @classmethod
-    async def _initStuFinishRate(cls) -> Dict[str, List[List[Union[int, float]]]]:
-        course_time = [i[0].replace(tzinfo=None) 
-                    for i in (await Course.all().values_list("start_datetime"))]
-        all_sem = Counter(map(cls._date2semester, course_time))
+    async def _initStuFinishRate(cls) -> Dict[str, Union[OrderedDict[int, float], Dict[int, int]]]:
+        all_sem = Counter(map(lambda x: cls._date2semester(x[0]), (await Course.all().values_list("start_datetime"))))
         current_sem = cls._date2semester(cls._refreshTime)
-        stu_stat = await MemberCourse.all().prefetch_related("course")\
-                                    .values_list("member_id", "course__start_datetime")
+
         # 初始化为全0
         stuFinishRate = {sem:{i[0]: 0 for i in (await Member.filter(join_datetime__lte=datetime.datetime(int(sem[:4]), 9, 1)).values_list("id"))} 
                          for sem in all_sem.keys()}
 
-        for stu_id, course_time in stu_stat:
-            sem = cls._date2semester(course_time.replace(tzinfo=None))
+        stu_stat = await MemberCourse.all().prefetch_related("course").values_list("course__start_datetime", "member_id")
+        for course_time, stu_id in stu_stat:
+            sem = cls._date2semester(course_time)
             stuFinishRate[sem][stu_id] += 1
 
         stuFinishRate = {
-            sem: (sorted([[k, v / all_sem[sem]] for k, v in stuFinishRate[sem].items()], key=lambda x: x[1], reverse=True,)
-            if sem != current_sem else stuFinishRate[sem])
+            sem: OrderedDict(sorted([[k, v / all_sem[sem]] for k, v in stuFinishRate[sem].items()], key=lambda x: x[1], reverse=True))
+            if sem != current_sem else stuFinishRate[sem]
             for sem in stuFinishRate.keys() 
         }
 
@@ -145,7 +139,7 @@ class SemesterStatistic(ABC):
 
     # 初始化所有学期的支部完成率
     @classmethod
-    async def _initOrgFinishRate(cls) -> Dict[str, List[List[Union[str, float]]]]:
+    async def _initOrgFinishRate(cls) -> Dict[str, Union[OrderedDict[int, float], Dict[int, int]]]:
         orgFinishRate = {sem:dict() for sem in cls._stuFinishRate.keys()}
         current_sem = cls._date2semester(cls._refreshTime)
 
@@ -155,13 +149,12 @@ class SemesterStatistic(ABC):
             orgFinishRate[sem] = {org: 0 for org in set(mem2org.values())}
             org2memberNum = Counter(mem2org.values())
 
+            # 往期为rate 当期为count
+            for member_id, rate_or_count in cls._stuFinishRate[sem].items():
+                orgFinishRate[sem][mem2org[member_id]] += rate_or_count
+
             if sem != current_sem:
-                for member_id, rate in cls._stuFinishRate[sem]:
-                    orgFinishRate[sem][mem2org[member_id]] += rate
-                orgFinishRate[sem] = sorted([[org, orgFinishRate[sem][org] / org2memberNum[org]] for org in orgFinishRate[sem].keys()], key=lambda x: x[1], reverse=True)
-            else:
-                for member_id, count in cls._stuFinishRate[sem].items():
-                    orgFinishRate[sem][mem2org[member_id]] += count
+                orgFinishRate[sem] = OrderedDict(sorted([[org, orgFinishRate[sem][org] / org2memberNum[org]] for org in orgFinishRate[sem].keys()], key=lambda x: x[1], reverse=True))
         
         return orgFinishRate
 
@@ -171,7 +164,7 @@ class SemesterStatistic(ABC):
         finish_datetimes = [i[0] for i in (await MemberCourse.filter(finish_datetime__gt=cls._refreshTime).values_list("finish_datetime"))]
         current_sem = list(set(map(cls._date2semester, finish_datetimes)))
         assert len(current_sem) == 1, \
-            "未更新的课程列表跨学期, 可能的原因是过长时间没有更新课程或没有初始化, 重启项目以运行 SemesterStatistic.initSemesterStatistic 方法重新初始化学期数据"
+            "未更新的课程列表跨学期, 可能的原因是过长时间没有更新课程或没有初始化, 手动重启项目以初始化学期数据"
         current_sem = current_sem[0]
 
         if len(finish_datetimes) > 0:
@@ -182,7 +175,7 @@ class SemesterStatistic(ABC):
             async with cls._refreshTimeLock:
                 cls._refreshTime = max(finish_datetimes)
         else:
-            print(f"WARNING: {datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day} " + 
+            print(f"[WARNING] {datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day} " + 
                   "SemesterStatistic.updateweekStatistic 没有新的数据可供更新")
 
     # 每周更新当前学期的个人数据
@@ -225,54 +218,49 @@ class SemesterStatistic(ABC):
                 break
         for k, v in cls._orgFinishRate.items():
             if type(v) is dict:
-                current_sem1 = k
+                assert current_sem == k
                 break
-        assert current_sem==current_sem1
+        
         sem_start_date, sem_end_date = cls._semester2date(current_sem)
         course_num = len(await Course.filter(start_datetime__gt=sem_start_date, start_datetime__lt=sem_end_date).values_list("id"))
 
         currentSemStuFinishCount: Dict[int, int] = cls._stuFinishRate[current_sem]
         async with cls._stuFinishRateLock:
-            cls._stuFinishRate[current_sem] = sorted([[stu_id, count/course_num] for stu_id, count in currentSemStuFinishCount.items()], key=lambda x: x[1], reverse=True)
+            cls._stuFinishRate[current_sem] = OrderedDict(sorted([[stu_id, count/course_num] for stu_id, count in currentSemStuFinishCount.items()], key=lambda x: x[1], reverse=True))
 
         currentSemOrgFinishCount: Dict[str, int] = cls._orgFinishRate[current_sem]
         org2stuNum = await Member.filter(join_datetime__lte=datetime.datetime(int(current_sem[:4]), 9, 1)).values_list("organization_id")
         org2stuNum = Counter([org[0] for org in org2stuNum])
         async with cls._orgFinishRateLock:
-            cls._orgFinishRate[current_sem] = sorted([[org_id, count/(course_num*org2stuNum[org_id])] for org_id, count in currentSemOrgFinishCount.items()], key=lambda x: x[1], reverse=True)
+            cls._orgFinishRate[current_sem] = OrderedDict(sorted([[org_id, count/(course_num*org2stuNum[org_id])] for org_id, count in currentSemOrgFinishCount.items()], key=lambda x: x[1], reverse=True))
 
     # 某学期全部学生的完成率排名
     @classmethod
-    async def get_all_stu_rank(cls, semester: str) -> List[List[int | float]]:
-        return cls._stuFinishRate[semester]
+    async def get_all_stu_rank(cls, semester: str) -> Dict[int, float]:
+        return dict(cls._stuFinishRate[semester])
     
     # 某学期某学生的完成率和名次
     @classmethod
     async def get_stu_rank(cls, semester: str, stu_id: int) -> Tuple[Union[float, int]]:
-        for stu in cls._stuFinishRate[semester]:
-            if stu[0] == stu_id:
-                return stu[1], cls._stuFinishRate[semester].index(stu)
+        rate = cls._stuFinishRate[semester][stu_id]
+        rank = list(cls._stuFinishRate[semester].keys()).index(stu_id) + 1
+        return rate, rank
     
     # 某学期全部支部的完成率排名
     @classmethod
-    async def get_all_org_rank(cls, semester: str) -> List[List[Union[str, float]]]:
-        return cls._orgFinishRate[semester]
+    async def get_all_org_rank(cls, semester: str) -> Dict[str, float]:
+        return dict(cls._orgFinishRate[semester])
     
     # 某学期某支部的完成率和名次
     @classmethod
     async def get_org_rank(cls, semester: str, org_id: str) -> Tuple[Union[float, int]]:
-        for org in cls._orgFinishRate[semester]:
-            if org[0] == org_id:
-                return org[1], cls._orgFinishRate[semester].index(org)
+        rate = cls._orgFinishRate[semester][org_id]
+        rank = list(cls._orgFinishRate[semester].keys()).index(org_id) + 1
+        return rate, rank
     
     # 某学期某支部学生的排名
     @classmethod
-    async def get_org_stu_rank(cls, semester: str, org_id: str) -> List[List[Union[int, float]]]:
-        all_stu = cls._stuFinishRate[semester]
+    async def get_org_stu_rank(cls, semester: str, org_id: str) -> Dict[int, float]:
         stu4org = [i[0] for i in await Member.filter(organization_id=org_id).values_list("id")]
-        org_stu_rank = []
-        for stu in all_stu:
-            if stu[0] in stu4org:
-                org_stu_rank.append(stu)
-        org_stu_rank.sort(key=lambda x: x[1], reverse=True)
+        org_stu_rank = {s[0]: s[1] for s in cls._stuFinishRate[semester].items() if s[0] in stu4org}
         return org_stu_rank

@@ -19,7 +19,7 @@ def semester_parser(semester: str):
 @semester.get("/{semester}/member")
 async def all_member(semester: str):
     semester = semester_parser(semester)
-    resp = normal_resp(result={semester: await SemesterStatistic.get_all_stu_rank(semester)})
+    resp = normal_resp(result=(await SemesterStatistic.get_all_stu_rank(semester)))
     return resp
 
 
@@ -34,7 +34,7 @@ async def get_member(semester: str, member_id: int):
 @semester.get("/{semester}/org")
 async def all_org(semester: str):
     semester = semester_parser(semester)
-    resp = normal_resp(result={semester: await SemesterStatistic.get_all_org_rank(semester)})
+    resp = normal_resp(result=(await SemesterStatistic.get_all_org_rank(semester)))
     return resp
 
 
@@ -49,5 +49,5 @@ async def get_org(semester: str, org_id: int):
 @semester.get("/{semester}/org/{org_id}/detail")
 async def get_org_detail(semester: str, org_id: int):
     semester = semester_parser(semester)
-    resp = normal_resp(result={semester: await SemesterStatistic.get_org_stu_rank(semester, org_id)})
+    resp = normal_resp(result=(await SemesterStatistic.get_org_stu_rank(semester, org_id)))
     return resp
