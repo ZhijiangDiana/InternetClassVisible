@@ -77,9 +77,10 @@ class RunningCourseService:
                 if await Member.exists(id=record["id"]):
                     if not await MemberCourse.exists(course_id=course.id, member_id=record["id"]):
                         await MemberCourse.create(course_id=course.id, member_id=record["id"])
-                        print(f"{record["cardNo"]}同学（{record["id"]}）学习了{record["course"]}（{course.id}）课程")
+                        # print(f"{record["cardNo"]}同学（{record["id"]}）学习了{record["course"]}（{course.id}）课程")
                 else:
-                    print(f"不存在{record["cardNo"]}同学（{record["id"]}）")
+                    # print(f"不存在{record["cardNo"]}同学（{record["id"]}）")
+                    pass
             print(f"更新了{len(cls._running_course)}个正在进行课程的学习记录")
 
     # 刷新完成率和排名

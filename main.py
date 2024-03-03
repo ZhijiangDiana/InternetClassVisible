@@ -3,6 +3,7 @@ import threading
 import time
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from config import *
 from starlette.staticfiles import StaticFiles
@@ -29,6 +30,14 @@ async def lifespan(app: FastAPI):
     # 项目运行结束后后要做的
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # *：代表所有客户端
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(test, prefix="/test", tags=["test_api"])
 app.include_router(course, prefix="/course", tags=["course_api"])
