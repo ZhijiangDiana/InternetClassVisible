@@ -4,13 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c4ab64ff-7dca-4796-8a3e-20b071a4d04f" name="更改" comment="将刷新个人完成率业务封装到service层中，使用懒加载每60秒更新一次完成率">
-      <change afterPath="$PROJECT_DIR$/controller/internal.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service/GlobalTimer.py" afterDir="false" />
+    <list default="true" id="c4ab64ff-7dca-4796-8a3e-20b071a4d04f" name="更改" comment="青年大学习登录自动识别验证码">
+      <change afterPath="$PROJECT_DIR$/middleware/ExceptionHandler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/MemberFinishStatistic.py" beforeDir="false" afterPath="$PROJECT_DIR$/service/MemberFinishStatistic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller/member.py" beforeDir="false" afterPath="$PROJECT_DIR$/controller/member.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/entity/response.py" beforeDir="false" afterPath="$PROJECT_DIR$/entity/response.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,35 +38,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.main.executor": "Run",
-    "Python.main_operator (1).executor": "Run",
-    "Python.main_operator.executor": "Run",
-    "RunOnceActivity.OpenDatabaseViewOnStart": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/14838/PycharmProjects/InternetClass",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "database.query.execution",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main_operator (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.main_operator.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenDatabaseViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;ZhijiangDiana&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/14838/PycharmProjects/InternetClass&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;database.query.execution&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mongo",
-      "mysql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mongo&quot;,
+      &quot;mysql&quot;
     ],
-    "com.intellij.ide.scratch.LRUPopupBuilder$1/SQL 方言": [
-      "MySQL"
+    &quot;com.intellij.ide.scratch.LRUPopupBuilder$1/SQL 方言&quot;: [
+      &quot;MySQL&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\14838\PycharmProjects\InternetClass" />
@@ -152,6 +150,8 @@
       <workItem from="1706793551823" duration="16372000" />
       <workItem from="1706869289729" duration="16543000" />
       <workItem from="1706961985694" duration="18376000" />
+      <workItem from="1710130843647" duration="447000" />
+      <workItem from="1710154611959" duration="413000" />
     </task>
     <task id="LOCAL-00001" summary="项目基本">
       <option name="closed" value="true" />
@@ -232,6 +232,6 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/InternetClass$main_operator.coverage" NAME="main_operator 覆盖结果" MODIFIED="1706531647813" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DataIn" />
     <SUITE FILE_PATH="coverage/InternetClass$main_operator__1_.coverage" NAME="main_operator (1) 覆盖结果" MODIFIED="1706678067602" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/service/DataIn" />
-    <SUITE FILE_PATH="coverage/InternetClass$main.coverage" NAME="main 覆盖结果" MODIFIED="1706983116372" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/InternetClass$main.coverage" NAME="main 覆盖结果" MODIFIED="1710046475907" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -3,8 +3,11 @@ import threading
 import time
 
 from fastapi import FastAPI
+from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+from pydantic import ValidationError
+
 from config import *
 from starlette.staticfiles import StaticFiles
 from tortoise.contrib.fastapi import register_tortoise
@@ -17,6 +20,7 @@ from controller.test import test
 from controller.course import course
 from controller.organization import organization
 from controller.semester import semester
+from middleware.ExceptionHandler import general_exception_handler
 from service.DataIn.InterfacePraparation import YouthBigLearning
 from service.GlobalTimer import scheduler
 from service.TotalCourseFinishStatistic import TotalCourseRateService
@@ -38,6 +42,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 全局异常处理
+app.add_exception_handler(Exception, general_exception_handler)
 
 app.include_router(test, prefix="/test", tags=["test_api"])
 app.include_router(course, prefix="/course", tags=["course_api"])

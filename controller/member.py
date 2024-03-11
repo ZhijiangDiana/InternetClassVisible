@@ -81,7 +81,7 @@ async def get_by_org(org_id: str):
     })
     members = await Member.filter(organization_id=org_id).prefetch_related("organization")
     for member in members:
-        resp.result["members"].append(MemberOut(member=member, organization=member.organization))
+        resp.data["members"].append(MemberOut(member=member, organization=member.organization))
 
     return resp
 
