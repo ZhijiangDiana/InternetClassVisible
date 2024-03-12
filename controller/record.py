@@ -1,12 +1,6 @@
-import json
-
 from fastapi import APIRouter
-from pydantic import BaseModel, validator
-from tortoise.exceptions import DoesNotExist
 
-from entity.response import normal_resp
 from entity.db_entity import *
-from service.DataIn.InterfacePraparation import YouthBigLearning
 
 record = APIRouter()
 

@@ -1,17 +1,9 @@
-import json
-from datetime import datetime
-
 from fastapi import APIRouter
-from pydantic import BaseModel, validator
-from starlette.responses import Response
-from tortoise.exceptions import DoesNotExist
 
-from dao import record_dao
 from entity.input_model import *
 from entity.output_model import *
 from entity.response import normal_resp
 from entity.db_entity import *
-from service.DataIn.InterfacePraparation import YouthBigLearning
 from service.TotalCourseFinishStatistic import TotalCourseRateService
 
 member = APIRouter()
@@ -58,60 +50,49 @@ member = APIRouter()
 
 
 # 列出所有成员
-@member.get("/search/all")
+@member.get("/")
 async def get_all():
     members = await Member.all()
-    resp = normal_resp(result={
-        "cnt": len(members),
-        "members": members
-    })
-    return resp
+    return normal_resp.success(result={"cnt": len(members),"members": members})
 
 
 # 根据支部列出其下属的所有成员
-@member.get("/search/org/{org_id}")
+@member.get("/org/{org_id}")
 async def get_by_org(org_id: str):
-    # 检验支部是否存在
-    org_id = OrgValidator(org_id=org_id).org_id
-
+    org_id = await OrgValidator(org_id)
     # 查询并返回
-    resp = normal_resp(result={
+    result={
         "cnt": 0,
         "members": []
-    })
-    members = await Member.filter(organization_id=org_id).prefetch_related("organization")
+    }
+    members = await Member.filter(organization_id=org_id)
     for member in members:
-        resp.data["members"].append(MemberOut(member=member, organization=member.organization))
-
-    return resp
+        result["cnt"] += 1
+        result["members"].append(member.id)
+    return normal_resp.success(result)
 
 
 # 根据id查找成员
-@member.get("/search/{mem_id}")
+@member.get("/{mem_id}")
 async def get_by_id(mem_id: int):
     # 检查成员是否存在
-    mem_id = MemberValidator(mem_id=mem_id).mem_id
+    mem_id = await MemberValidator(mem_id)
 
     mem = await Member.get(id=mem_id)
     org = await mem.organization.get()
-    resp = normal_resp(result={
-        "member": mem,
-        "organization": org
-    })
-
-    return resp
+    return normal_resp.success(result={"member": mem, "organization": org})
 
 
 # 统计某个成员的学习情况，返回其id，完成率，详细完成情况
 @member.get("/statistic/record/{mem_id}")
 async def get_course_finish_statistic(mem_id: int):
     # 检查成员是否存在
-    mem_id = MemberValidator(mem_id=mem_id).mem_id
+    mem_id = await MemberValidator(mem_id)
 
     rate = await TotalCourseRateService.get_member_finish_rate(mem_id)
     status = await TotalCourseRateService.get_finish_status(mem_id)
 
-    return normal_resp(result={
+    return normal_resp.success(result={
         "refresh_time": rate["refresh_time"],
         "mem_id": mem_id,
         "finished_rate": rate["member_rate"],
@@ -123,17 +104,15 @@ async def get_course_finish_statistic(mem_id: int):
 @member.get("/statistic/rank/all/{mem_id}")
 async def get_member_rank(mem_id: int):
     # 检查成员是否存在
-    mem_id = MemberValidator(mem_id=mem_id).mem_id
+    mem_id = await MemberValidator(mem_id)
 
     rate = await TotalCourseRateService.get_member_finish_rate(mem_id)
     rank = await TotalCourseRateService.get_member_rate_rank(mem_id)
 
-    return normal_resp(result={
+    return normal_resp.success(result={
         "refresh_time": rate["refresh_time"],
         "mem_id": mem_id,
         "finished_rate": rate["member_rate"],
         "org_rank": rank["rank_in_org"],
         "p_org_rank": rank["rank_in_p_org"],
     })
-
-#

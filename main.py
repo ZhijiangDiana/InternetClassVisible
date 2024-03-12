@@ -1,29 +1,15 @@
-import asyncio
-import threading
-import time
-
 from fastapi import FastAPI
-from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from pydantic import ValidationError
 
 from config import *
-from starlette.staticfiles import StaticFiles
 from tortoise.contrib.fastapi import register_tortoise
 from contextlib import asynccontextmanager
 
-from controller.p_org import p_org
-from controller.record import record
-from controller.member import member
-from controller.test import test
-from controller.course import course
-from controller.organization import organization
-from controller.semester import semester
-from middleware.ExceptionHandler import general_exception_handler
+from controller import *
+from middleware import *
 from service.DataIn.InterfacePraparation import YouthBigLearning
 from service.GlobalTimer import scheduler
-from service.TotalCourseFinishStatistic import TotalCourseRateService
 
 
 @asynccontextmanager
@@ -35,6 +21,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+app.add_middleware(CheckToken)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # *：代表所有客户端
@@ -46,7 +33,7 @@ app.add_middleware(
 # 全局异常处理
 app.add_exception_handler(Exception, general_exception_handler)
 
-app.include_router(test, prefix="/test", tags=["test_api"])
+app.include_router(auth, prefix="/authentication", tags=["authentication_api"])
 app.include_router(course, prefix="/course", tags=["course_api"])
 app.include_router(organization, prefix="/organization", tags=["organization_api"])
 app.include_router(member, prefix="/member", tags=["member_api"])
@@ -64,4 +51,4 @@ if __name__ == '__main__':
     if LOGIN_AT_STARTUP:
         youth_learning = YouthBigLearning()
 
-    uvicorn.run("main:app", host=SERVER_IP, port=SERVER_PORT)
+    uvicorn.run("main:app", host=SERVER_IP, port=SERVER_PORT, reload=True)

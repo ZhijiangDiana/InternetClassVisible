@@ -4,10 +4,10 @@ TORTOISE_ORM = {
             'engine': 'tortoise.backends.mysql',
             'credentials': {
                 'user': 'root',
-                'password': '114514',
+                'password': 'root',
                 'host': 'localhost',
                 'port': '3306',
-                'database': 'internet_class_visible',
+                'database': 'fastapi',
             }
         }
     },

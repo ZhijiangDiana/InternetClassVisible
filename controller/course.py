@@ -1,9 +1,7 @@
-import json
-
-from fastapi import APIRouter, Response
-from pydantic import BaseModel, validator
+from fastapi import APIRouter
 
 from entity.db_entity import *
+from entity.input_model import CourseValidator
 from entity.response import normal_resp
 
 course = APIRouter()
@@ -23,23 +21,17 @@ course = APIRouter()
 #     return True
 
 
-@course.get("/search/all")
+@course.get("/")
 async def get_all():
     courses = await Course.all()
-    resp = normal_resp(result={
+    return normal_resp.success(result={
         "cnt": len(courses),
         "courses": courses
     })
-    return resp
 
 
-@course.get("/search/{course_id}")
+@course.get("/{course_id}")
 async def get_by_id(course_id: str):
-    is_exist = await Course.exists(id=course_id)
-    if not is_exist:
-        return normal_resp(
-            message="查询结果为空"
-        )
+    course_id = await CourseValidator(course_id)
     cou = await Course.get(id=course_id)
-    resp = normal_resp(result=cou)
-    return resp
+    return normal_resp.success(result=cou)

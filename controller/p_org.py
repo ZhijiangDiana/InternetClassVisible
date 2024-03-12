@@ -9,7 +9,7 @@ p_org = APIRouter()
 @p_org.get("/statistic/record")
 async def get_statistic_record():
     rate = await TotalCourseRateService.get_p_finish_rate()
-    resp = normal_resp(result={
+    resp = normal_resp.success(result={
         "refresh_time": rate["refresh_time"],
         "p_finish_rate": rate["p_finish_rate"]
     })
@@ -21,7 +21,7 @@ async def get_statistic_record():
 async def get_member_rank_list():
     rank = await TotalCourseRateService.get_p_member_rank_list()
 
-    return normal_resp(result={
+    return normal_resp.success(result={
         "refresh_time": rank["refresh_time"],
         "rank_list": rank["rank"]
     })
@@ -31,7 +31,7 @@ async def get_member_rank_list():
 async def get_all_org_rank_list():
     rank = await TotalCourseRateService.get_p_org_rank_list()
 
-    return normal_resp(result={
+    return normal_resp.success(result={
         "refresh_time": rank["refresh_time"],
         "rank_list": rank["rank"]
     })
