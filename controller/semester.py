@@ -11,9 +11,19 @@ semester = APIRouter()
 
 # 202320241 2023-2024学年第一学期
 def semester_parser(semester: str):
-    if re.match(r"^(20\d{2})(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])$", semester) is None:
+    m = re.match(r"^(20[0-9]{2})(20[0-9]{2})([12])$", semester)
+    if m is None:
         raise ValidatorError("学期格式错误")
-    return SemesterStatistic._date2semester(datetime.datetime.strptime(semester, "%Y%m%d"))
+    m = list(m.groups())
+    if int(m[1]) - int(m[0]) != 1 or m[2] not in ['1', '2']:
+        raise ValidatorError("学期格式错误")
+    
+    m[2] = "一" if m[2] == "1" else "二"
+    sem = f"{m[0]}-{m[1]}学年第{m[2]}学期"
+
+    if sem not in SemesterStatistic._orgFinishRate.keys():
+        raise ValidatorError("学期不存在")
+    return sem
 
 
 @semester.get("/{semester}/member")

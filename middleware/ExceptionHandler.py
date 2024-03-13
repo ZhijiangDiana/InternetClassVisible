@@ -3,6 +3,7 @@ from starlette.responses import JSONResponse
 from entity.response import normal_resp
 
 
+# 数据校验错误
 class ValidatorError(Exception):
     def __init__(self, detail):
         super().__init__(self)
@@ -11,6 +12,7 @@ class ValidatorError(Exception):
         return self.detail
 
 
+# 身份验证错误
 class AuthError(Exception):
     def __init__(self, detail):
         super().__init__(self)
