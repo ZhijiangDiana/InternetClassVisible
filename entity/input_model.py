@@ -1,7 +1,7 @@
 import re
+from typing import Union
 
-from pydantic import BaseModel
-from pydantic.v1 import validator
+from pydantic import BaseModel, validator
 from middleware.ExceptionHandler import ValidatorError
 
 from entity.db_entity import *
@@ -36,12 +36,16 @@ async def EmailValidator(email):
     return email
 
 
-class AuthUser(BaseModel):
-    username: str
+class Password(BaseModel):
     password: str
 
-    @validator("password")
-    def validate_password(cls, password):
-        if not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$", password):
-            raise ValueError("密码必须包含大小写字母和数字, 长度大于8位")
-        return password
+    # @validator("password")
+    # def validate_password(cls, password):
+    #     if not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$", password):
+    #         raise ValueError("密码必须包含大小写字母和数字, 长度大于8位")
+    #     return password
+
+
+class AuthUser(BaseModel):
+    username: Union[int, str]
+    password: str

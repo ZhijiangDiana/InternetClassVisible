@@ -106,6 +106,7 @@ class SemesterStatistic(ABC):
     # 初始化完成率
     @classmethod
     async def initSemesterStatistic(cls) -> None:
+        print("初始化学期数据")
         # 初始化过程_refreshTime不用作数据库查询, 只用于指示最近的学期
         async with cls._refreshTimeLock:
             cls._refreshTime = max(await MemberCourse.all().values_list("finish_datetime"))[0]
@@ -113,6 +114,7 @@ class SemesterStatistic(ABC):
             cls._stuFinishRate = await cls._initStuFinishRate()
         async with cls._orgFinishRateLock:
             cls._orgFinishRate = await cls._initOrgFinishRate()
+        print("学期数据初始化完成")
 
     # 初始化所有学期的学生完成率
     @classmethod
@@ -163,6 +165,9 @@ class SemesterStatistic(ABC):
     async def updateweekStatistic(cls) -> None:
         finish_datetimes = [i[0] for i in (await MemberCourse.filter(finish_datetime__gt=cls._refreshTime).values_list("finish_datetime"))]
         current_sem = list(set(map(cls._date2semester, finish_datetimes)))
+        
+        if len(current_sem) == 0:
+            return
         assert len(current_sem) == 1, \
             "未更新的课程列表跨学期, 可能的原因是过长时间没有更新课程或没有初始化, 手动重启项目以初始化学期数据"
         current_sem = current_sem[0]

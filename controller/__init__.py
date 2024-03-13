@@ -1,4 +1,4 @@
-from controller.auth import auth_handler, auth
+from controller.auth import AuthHandler, auth
 from controller.course import course
 from controller.member import member
 from controller.organization import organization
@@ -8,7 +8,7 @@ from controller.semester import semester
 
 
 __all__ = [
-    "auth_handler",
+    "AuthHandler",
     "auth",
     "course",
     "member",
