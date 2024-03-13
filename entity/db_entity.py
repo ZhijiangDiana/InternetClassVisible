@@ -15,6 +15,8 @@ class Member(Model):
     name = fields.CharField(max_length=114, description="成员姓名")
     user_type = fields.CharField(max_length=45, description="成员类型")
     email = fields.CharField(max_length=114, null=True, description="成员邮箱")
+    password = fields.CharField(max_length=114, null=True, description="成员密码", default="114514")
+    permission = fields.IntField(description="成员权限", default=1)
 
     organization = fields.ForeignKeyField("models.Organization", related_name="Organization")
 
