@@ -34,7 +34,7 @@ class RunningCourseService:
             if now > datetime.strptime(course["endTime"], "%Y-%m-%d %H:%M:%S"):
                 continue
             # 检查数据库中是否有该课程，若没有则添加
-            if not await Course.exists(course["id"]):
+            if not await Course.exists(id=course["id"]):
                 start_time = min(course["startTime"], course["createTime"])
                 added_course = await Course.create(id=course["id"], type=course["type"], title=course["title"],
                                                    start_datetime=start_time, end_datetime=course["endTime"],

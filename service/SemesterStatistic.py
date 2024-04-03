@@ -13,7 +13,7 @@ class SemesterStatistic(ABC):
     _stuFinishRateLock = asyncio.Lock()
 
     # 学期: {支部编号: 完成率} 按完成率排序
-    _orgFinishRate: Dict[str, Union[OrderedDict[int, float], Dict[int, int]]] = dict()
+    _orgFinishRate: Dict[str, Union[OrderedDict[str, float], Dict[str, int]]] = dict()
     _orgFinishRateLock = asyncio.Lock()
 
     # 上次更新的完成记录中最晚一条的时间
@@ -252,6 +252,7 @@ class SemesterStatistic(ABC):
         return rate, rank
     
     # 某学期全部支部的完成率排名
+    # {"name":str, "value":float}
     @classmethod
     async def get_all_org_rank(cls, semester: str) -> Dict[str, float]:
         return dict(cls._orgFinishRate[semester])

@@ -17,6 +17,7 @@ import base64
 import numpy as np
 import pandas as pd
 import time
+import datetime
 
 from ai.captcha_recognition.captcha import captchaRecog
 
@@ -74,6 +75,7 @@ class DoubtfulJsonReader:
 # 爬虫的单例模式
 class YouthBigLearning:
     __instance = None
+    __last_login_time = datetime.datetime.now()
     __lock = threading.Lock()
 
     def __new__(cls, json_file_path="service/DataIn/prop.json"):
@@ -81,9 +83,16 @@ class YouthBigLearning:
             if cls.__instance is None:
                 # print('new successfully')
                 cls.__instance = super().__new__(cls)
-
-                # todo 短时间使用还可以，长时间跑的话需要开一个线程维护登陆信息
                 cls.__login(cls.__instance, json_file_path)
+            
+            # 隔一小时重登录一次，不过具体重登时刻受此类的被调用周期影响
+            if datetime.datetime.now() - cls.__instance.__last_login_time >= datetime.timedelta(hours=1):
+                cls.__login(cls.__instance, json_file_path)
+                cls.__instance.__last_login_time = datetime.datetime.now()
+            
+            # 每周一更新一下最新期数
+            if datetime.datetime.now().weekday() == 0 and datetime.datetime.now().hour <= 1:
+                cls.__instance.renewMostRecentPeriodicalNum(json_file_path)
         return cls.__instance
 
     """
@@ -154,7 +163,7 @@ class YouthBigLearning:
             }
             r = requests.get(self.reader.read("final_request_template_query_all"), params=params,
                              headers=self.reader.read("login_headers"))
-            # print(r.text)
+            print(r.text)
             score = int(r.json()["result"]["node"]["score"])
             if score > 0:
                 print(score)
@@ -444,4 +453,5 @@ class YouthBigLearning:
         resp = requests.get(self.reader.read("query_all_courses"), params=params,
                             headers=self.reader.read("login_headers")).json()
 
+        print(resp)
         return resp["result"]["list"]
