@@ -255,6 +255,13 @@ class SemesterStatistic(ABC):
     # {"name":str, "value":float}
     @classmethod
     async def get_all_org_rank(cls, semester: str) -> Dict[str, float]:
+        if type(cls._orgFinishRate[semester]) is dict:
+            sem_start_date, sem_end_date = cls._semester2date(semester)
+            course_num = len(await Course.filter(start_datetime__gt=sem_start_date, start_datetime__lt=sem_end_date).values_list("id"))
+            org2stuNum = Counter([i[0] for i in await Member.filter(organization_id__in=cls._orgFinishRate[semester].keys()).values_list("organization_id")])
+            result = OrderedDict(sorted([[org_id, count/(course_num*org2stuNum[org_id])] 
+                                         for org_id, count in cls._orgFinishRate[semester].items()], key=lambda x: x[1], reverse=True))
+            return dict(result)
         return dict(cls._orgFinishRate[semester])
     
     # 某学期某支部的完成率和名次

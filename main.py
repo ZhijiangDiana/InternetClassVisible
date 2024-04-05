@@ -40,6 +40,7 @@ app.include_router(member, prefix="/member", tags=["member_api"])
 app.include_router(record, prefix="/finish_record", tags=["finish_record_api"])
 app.include_router(p_org, prefix="/p_org", tags=["p_org_api"])
 app.include_router(semester, prefix="/semester", tags=["semester_api"])
+app.include_router(demand, prefix="/demand", tags=["front end demand"])
 
 register_tortoise(
     app=app,

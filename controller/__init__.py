@@ -5,6 +5,7 @@ from controller.organization import organization
 from controller.p_org import p_org
 from controller.record import record
 from controller.semester import semester
+from controller.demand import demand
 
 
 __all__ = [
@@ -16,4 +17,5 @@ __all__ = [
     "p_org",
     "record",
     "semester",
+    "demand"
 ]
