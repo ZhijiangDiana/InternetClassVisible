@@ -20,9 +20,9 @@ organization = APIRouter()
 #     return True
 
 
-@organization.get("/")
+@organization.get("")
 async def get_all():
-    orgs = await Organization.all()
+    orgs = await Organization.all().order_by("-create_time")
     return normal_resp.success(result={
         "cnt": len(orgs),
         "organizations": orgs

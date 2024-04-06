@@ -1,5 +1,6 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from service.Background import *
+from service.DailyRecordService import DailyRecordService
 from service.SemesterStatistic import SemesterStatistic
 from controller.auth import AuthHandler
 from tortoise import Tortoise
@@ -20,6 +21,8 @@ async def initialize():
     await update_statistic_course_finish_rate()
     # 更新总体完成率名单
     await update_statistic_member_finish_rate()
+    # 更新每日完成名单
+    await DailyRecordService.get_daily_status()
     # 初始化学期数据
     await SemesterStatistic.initSemesterStatistic()
     # 检查数据库中是否有明文密码并加密

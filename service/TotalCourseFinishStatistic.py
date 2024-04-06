@@ -92,12 +92,13 @@ class TotalCourseRateService:
     async def _update_p_rate(finish_rate):
         # 计算光电学院总完成率并存入表中
         rate = 0.0
-        org_cnt = 0
+        all_member_cnt = 0
         for key, value in finish_rate["organization_rate"].items():
-            rate += value
-            org_cnt += 1
-        if org_cnt > 0:
-            rate /= org_cnt
+            org_mem_cnt = await Member.filter(organization_id=key).count()
+            rate += value * org_mem_cnt
+            all_member_cnt += org_mem_cnt
+        if all_member_cnt > 0:
+            rate /= all_member_cnt
         finish_rate["p_org_rate"] = rate
         print(f"已在{datetime.now()}更新学院完成率名单")
 

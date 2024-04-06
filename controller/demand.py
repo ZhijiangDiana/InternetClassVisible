@@ -29,8 +29,8 @@ async def get_total_rate():
 
 @demand.get("/course/{course_id}")
 async def get_by_id(course_id: str):
-    barData = Counter([i[0] for i in await MemberCourse.filter(course_id="C1067").prefetch_related("member").values_list("member__organization_id")])
-    lineData = Counter([i[0] for i in await Member.filter(join_datetime__lte=(await Course.get(id="C1067").values_list("start_datetime"))).values_list("organization_id")])
+    barData = Counter([i[0] for i in await MemberCourse.filter(course_id=course_id).prefetch_related("member").values_list("member__organization_id")])
+    lineData = Counter([i[0] for i in await Member.filter(join_datetime__lte=(await Course.get(id=course_id).values_list("start_datetime"))).values_list("organization_id")])
     lineData = {k:lineData[k] for k in barData.keys()}
     category = [(await Organization.get(id=i).values_list("title"))[0] for i in barData.keys()]
     rateData = [int(v/lineData[k] * 100) for k,v in barData.items()]

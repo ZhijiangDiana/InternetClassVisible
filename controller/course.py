@@ -21,9 +21,9 @@ course = APIRouter()
 #     return True
 
 
-@course.get("/")
+@course.get("")
 async def get_all():
-    courses = await Course.all()
+    courses = await Course.all().order_by("-start_datetime")
     return normal_resp.success(result={
         "cnt": len(courses),
         "courses": courses

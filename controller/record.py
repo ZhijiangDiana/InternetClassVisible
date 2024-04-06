@@ -1,6 +1,8 @@
 from fastapi import APIRouter
 
 from entity.db_entity import *
+from entity.response import normal_resp
+from service.DailyRecordService import DailyRecordService
 
 record = APIRouter()
 
@@ -35,3 +37,10 @@ record = APIRouter()
 #         cnt += 1
 #
 #     return normal_resp()
+
+
+@record.get("/heatMap")
+async def get_heat_map():
+    res = await DailyRecordService.get_daily_status()
+    return normal_resp.success(result=res)
+
