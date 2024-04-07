@@ -7,14 +7,19 @@ from config import TORTOISE_ORM
 
 from collections import OrderedDict
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Dict, Union, Tuple
 from datetime import datetime, timedelta
 
 
 class probaPredModel(ABC):
     model = xgb.Booster(model_file="ai/proba_pred/model.json")
+    # 上次刷新时间
     _refresh_time: datetime = None
+    # 多久刷新一次
+    _refresh_cycle: timedelta = timedelta(days=1)
     all_course: OrderedDict = None
+    _stu_proba_cache: Dict[int, Tuple[Union[float, datetime]]] = dict()
+
 
     @abstractmethod
     def _() -> None:
@@ -22,11 +27,11 @@ class probaPredModel(ABC):
 
     @classmethod
     async def refresh(cls) -> None:
-        if len(Tortoise.apps) == 0:
-            print('[WARNING] 未连接数据库')
-            await Tortoise.init(config=TORTOISE_ORM)
+        # if len(Tortoise.apps) == 0:
+        #     print('[WARNING] 未连接数据库')
+        #     await Tortoise.init(config=TORTOISE_ORM)
 
-        if cls.all_course is None or cls._refresh_time is None or (datetime.now() - cls._refresh_time) > timedelta(days=1):
+        if cls.all_course is None or cls._refresh_time is None or (datetime.now() - cls._refresh_time) > cls._refresh_cycle:
             cls.all_course = await Course.all().values("id", "start_datetime")
             cls.all_course = OrderedDict({c["id"]: c["start_datetime"] for c in sorted(cls.all_course, key=lambda t: t["start_datetime"])})
             cls.refresh_time = datetime.now()
@@ -45,6 +50,9 @@ class probaPredModel(ABC):
 
     @classmethod
     async def proba_pred(cls, student_id: int) -> float:
+        if student_id in cls._stu_proba_cache.keys() and (datetime.now() - cls._stu_proba_cache[student_id][1]) < cls._refresh_cycle:
+            return cls._stu_proba_cache[student_id][0]
+        
         await cls.refresh()
         stu_course = await MemberCourse.filter(member_id=student_id).values_list("course_id", "finish_datetime")
         if len(stu_course) == 0:
@@ -59,5 +67,8 @@ class probaPredModel(ABC):
 
             feature = [[continuous_finish[-1], total_finish[-1], interrupt_finish_cnt[-1]]]
             feature = xgb.DMatrix(feature)
-            proba = cls.model.predict(feature)
-        return proba[0]
+            proba = cls.model.predict(feature)[0].tolist()
+        
+        cls._stu_proba_cache[student_id] = (proba, datetime.now())
+
+        return proba
