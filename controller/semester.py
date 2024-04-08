@@ -1,6 +1,8 @@
 import re
 import datetime
 from fastapi import APIRouter
+
+from entity.db_entity import Organization, Member
 from entity.response import normal_resp
 from entity.input_model import MemberValidator, OrgValidator
 from middleware.ExceptionHandler import ValidatorError
@@ -21,16 +23,41 @@ def semester_parser(semester: str):
     m[2] = "一" if m[2] == "1" else "二"
     sem = f"{m[0]}-{m[1]}学年第{m[2]}学期"
 
-    if sem not in SemesterStatistic._orgFinishRate.keys():
-        raise ValidatorError("学期不存在")
+    # if sem not in SemesterStatistic._orgFinishRate.keys():
+    #     raise ValidatorError("学期不存在")
     return sem
+
+
+@semester.get("")
+async def get_all_semesters():
+    semester_str = ["202020212", "202120221", "202120222", "202220231", "202220232", "202320241"]
+    res = []
+    for sem in semester_str:
+        res.append({
+            "id": sem,
+            "name": semester_parser(sem),
+        })
+    res.reverse()
+    return normal_resp.success(result=res)
 
 
 @semester.get("/{semester}/member")
 async def all_member(semester: str):
     semester = semester_parser(semester)
-    resp = normal_resp.success(result=(await SemesterStatistic.get_all_stu_rank(semester)))
-    return resp
+    res = await SemesterStatistic.get_all_stu_rank(semester)
+    res = {key: value for key, value in res.items() if value != 0}
+    sorted_data = sorted(res.items(), key=lambda x: x[1], reverse=True)
+    result_list = list(sorted_data)[:50]
+    result = []
+    for item in result_list:
+        mem = await Member.get(id=item[0])
+        result.append({
+            "member": mem,
+            "organization": await mem.organization.get(),
+            "rate": item[1],
+        })
+
+    return normal_resp.success(result=result)
 
 
 @semester.get("/{semester}/member/{member_id}")
@@ -45,8 +72,17 @@ async def get_member(semester: str, member_id: int):
 @semester.get("/{semester}/org")
 async def all_org(semester: str):
     semester = semester_parser(semester)
-    resp = normal_resp.success(result=(await SemesterStatistic.get_all_org_rank(semester)))
-    return resp
+    res = await SemesterStatistic.get_all_org_rank(semester)
+    sorted_data = sorted(res.items(), key=lambda x: x[1], reverse=True)
+    result_list = list(sorted_data)
+    result = []
+    for item in result_list:
+        result.append({
+            "organization": await Organization.get(id=item[0]),
+            "rate": item[1],
+        })
+
+    return normal_resp.success(result=result)
 
 
 @semester.get("/{semester}/org/{org_id}")
