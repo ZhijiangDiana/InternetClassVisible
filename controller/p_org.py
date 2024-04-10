@@ -1,6 +1,8 @@
 from fastapi import APIRouter
 
+from entity.db_entity import Organization
 from entity.response import normal_resp
+from service.CourseFinishStatistic import CourseRateCalculateService
 from service.TotalCourseFinishStatistic import TotalCourseRateService
 
 p_org = APIRouter()
@@ -35,3 +37,16 @@ async def get_all_org_rank_list():
         "refresh_time": rank["refresh_time"],
         "rank_list": rank["rank"]
     })
+
+
+@p_org.get("/statistic/rank_list/course/{courseId}")
+async def get_course_rank_list(courseId: str):
+    res = await CourseRateCalculateService.get_org_rate_list(course_id=courseId)
+    result = []
+    for item in res:
+        if item[1] != 0:
+            result.append({
+                "organization": await Organization.get(id=item[0]),
+                "rate": item[1]
+            })
+    return normal_resp.success(result=result)
