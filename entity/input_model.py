@@ -19,9 +19,18 @@ async def OrgValidator(org_id):
 
 
 async def MemberValidator(mem_id):
-    if not (await Member.exists(id=mem_id)):
-        raise ValidatorError("成员id不存在")
-    return mem_id
+    # 只含姓名
+    if re.match(r"^[\u4e00-\u9fa5]+(·[\u4e00-\u9fa5]+)?$", mem_id) is not None:
+        if not (await Member.exists(name=mem_id)):
+            raise ValidatorError("成员姓名不存在")
+        return int((await Member.get(name=mem_id).values_list("id"))[0])
+    # 只含数字
+    elif re.match(r"^\d+$", mem_id) is not None:
+        if not (await Member.exists(id=mem_id)):
+            raise ValidatorError("成员id不存在")
+        return int(mem_id)
+    else:
+        raise ValidatorError("输入成员id或姓名不合法")
 
 
 async def CourseValidator(course_id):

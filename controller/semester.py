@@ -45,23 +45,20 @@ async def get_all_semesters():
 async def all_member(semester: str):
     semester = semester_parser(semester)
     res = await SemesterStatistic.get_all_stu_rank(semester)
-    res = {key: value for key, value in res.items() if value != 0}
-    sorted_data = sorted(res.items(), key=lambda x: x[1], reverse=True)
-    result_list = list(sorted_data)[:50]
     result = []
-    for item in result_list:
-        mem = await Member.get(id=item[0])
-        result.append({
-            "member": mem,
-            "organization": await mem.organization.get(),
-            "rate": item[1],
-        })
-
+    for item in res:
+        if item[1] != 0:
+            mem = await Member.get(id=item[0]).values("id", "name", "email", "organization_id", "join_datetime")
+            result.append({
+                "member": mem,
+                "organization": await Organization.get(id=mem["organization_id"]).values(),
+                "rate": item[1],
+            })
     return normal_resp.success(result=result)
 
 
-@semester.get("/{semester}/member/{member_id}")
-async def get_member(semester: str, member_id: int):
+@semester.get("/{semester}/member/{member_id}", description="第二个位置参数可以是数据库中的学生id或学生姓名")
+async def get_member(semester: str, member_id: str):
     semester = semester_parser(semester)
     member_id = await MemberValidator(member_id)
     rate, rank = await SemesterStatistic.get_stu_rank(semester, member_id)
@@ -73,15 +70,13 @@ async def get_member(semester: str, member_id: int):
 async def all_org(semester: str):
     semester = semester_parser(semester)
     res = await SemesterStatistic.get_all_org_rank(semester)
-    sorted_data = sorted(res.items(), key=lambda x: x[1], reverse=True)
-    result_list = list(sorted_data)
     result = []
-    for item in result_list:
-        result.append({
-            "organization": await Organization.get(id=item[0]),
-            "rate": item[1],
-        })
-
+    for org_id, rate in res.items():
+        if rate != 0:
+            result.append({
+                "organization": await Organization.get(id=org_id).values(),
+                "rate": rate,
+            })
     return normal_resp.success(result=result)
 
 
@@ -98,5 +93,5 @@ async def get_org(semester: str, org_id: str):
 async def get_org_detail(semester: str, org_id: str):
     semester = semester_parser(semester)
     org_id = await OrgValidator(org_id)
-    resp = normal_resp.success(result=(await SemesterStatistic.get_org_stu_rank(semester, org_id)))
-    return resp
+    org_stu_rank = await SemesterStatistic.get_org_stu_rank(semester, org_id)
+    return normal_resp.success(result=[(await Member.get(id=stu_id).values_list("name"))[0] for stu_id in org_stu_rank])

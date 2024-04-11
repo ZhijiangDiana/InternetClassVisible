@@ -242,13 +242,24 @@ class SemesterStatistic(ABC):
     # 某学期全部学生的完成率排名
     @classmethod
     async def get_all_stu_rank(cls, semester: str) -> Dict[int, float]:
-        return dict(cls._stuFinishRate[semester])
+        result = cls._stuFinishRate[semester]
+        if type(result) is dict:
+            sem_start_date, sem_end_date = cls._semester2date(semester)
+            course_num = len(await Course.filter(start_datetime__gt=sem_start_date, start_datetime__lt=sem_end_date).values_list("id"))
+            result = OrderedDict(sorted([[stu_id, count/course_num] for stu_id, count in result.items()], key=lambda x: x[1], reverse=True))
+        return list(result.items())
     
     # 某学期某学生的完成率和名次
     @classmethod
     async def get_stu_rank(cls, semester: str, stu_id: int) -> Tuple[Union[float, int]]:
-        rate = cls._stuFinishRate[semester][stu_id]
-        rank = list(cls._stuFinishRate[semester].keys()).index(stu_id) + 1
+        if type(cls._stuFinishRate[semester]) is dict:
+            sem_start_date, sem_end_date = cls._semester2date(semester)
+            course_num = len(await Course.filter(start_datetime__gt=sem_start_date, start_datetime__lt=sem_end_date).values_list("id"))
+            rate = cls._stuFinishRate[semester][stu_id]/course_num
+            rank = sorted(list(cls._stuFinishRate[semester].keys()), key=lambda x: cls._stuFinishRate[semester][x], reverse=True).index(stu_id) + 1
+        else:
+            rate = cls._stuFinishRate[semester][stu_id]
+            rank = list(cls._stuFinishRate[semester].keys()).index(stu_id) + 1
         return rate, rank
     
     # 某学期全部支部的完成率排名
@@ -267,13 +278,22 @@ class SemesterStatistic(ABC):
     # 某学期某支部的完成率和名次
     @classmethod
     async def get_org_rank(cls, semester: str, org_id: str) -> Tuple[Union[float, int]]:
-        rate = cls._orgFinishRate[semester][org_id]
-        rank = list(cls._orgFinishRate[semester].keys()).index(org_id) + 1
+        if type(cls._orgFinishRate[semester]) is dict:
+            sem_start_date, sem_end_date = cls._semester2date(semester)
+            course_num = len(await Course.filter(start_datetime__gt=sem_start_date, start_datetime__lt=sem_end_date).values_list("id"))
+            orgStuNum = len(await Member.filter(organization_id=org_id).values_list("id"))
+            rate = cls._orgFinishRate[semester][org_id]/(course_num*orgStuNum)
+            rank = sorted(list(cls._orgFinishRate[semester].keys()), key=lambda x: cls._orgFinishRate[semester][x], reverse=True).index(org_id) + 1
+        else:
+            rate = cls._orgFinishRate[semester][org_id]
+            rank = list(cls._orgFinishRate[semester].keys()).index(org_id) + 1
         return rate, rank
     
     # 某学期某支部学生的排名
     @classmethod
     async def get_org_stu_rank(cls, semester: str, org_id: str) -> Dict[int, float]:
         stu4org = [i[0] for i in await Member.filter(organization_id=org_id).values_list("id")]
-        org_stu_rank = {s[0]: s[1] for s in cls._stuFinishRate[semester].items() if s[0] in stu4org}
+        if type(cls._stuFinishRate[semester]) is dict:
+            org_stu_rank = sorted([s for s in cls._stuFinishRate[semester].keys() if s in stu4org], key=lambda x:cls._stuFinishRate[semester][x], reverse=True)
+        org_stu_rank = [s for s in cls._stuFinishRate[semester].keys() if s in stu4org]
         return org_stu_rank
