@@ -98,3 +98,24 @@ async def courseOverview(course: str):
         "finish_rate": await CourseRateCalculateService.get_p_org_course_rate(course),
         "count": 5,
     })
+
+
+@demand.get("/semesterOverView/{semester}")
+async def semesterOverView(semester: str):
+    semester = semester_parser(semester)
+    sem_start_date, sem_end_date = SemesterStatistic._semester2date(semester)
+    course_num = len(await Course.filter(start_datetime__gt=sem_start_date, start_datetime__lt=sem_end_date).values_list("id"))
+    # 支部最高完成率，平均完成率，新增团员数
+    if type(SemesterStatistic._orgFinishRate[semester]) is dict:
+        orgRates = [org_data[1]/((await Member.filter(organization_id=org_data[0]).count())*course_num) for org_data in SemesterStatistic._orgFinishRate[semester].items()]
+    else:
+        orgRates = list(SemesterStatistic._orgFinishRate[semester].values())
+    if semester.startswith("2023"):
+        newMemberNum = 955
+    else:
+        newMemberNum = await Member.filter(join_datetime__gt=sem_start_date, join_datetime__lt=sem_end_date).count()
+    return normal_resp.success(result={
+        "highestRate": max(orgRates),
+        "averageRate": float(np.mean(orgRates)),
+        "newMemberNum": newMemberNum
+    })
