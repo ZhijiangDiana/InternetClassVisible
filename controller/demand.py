@@ -5,6 +5,7 @@ from entity.db_entity import *
 from entity.response import normal_resp
 from entity.input_model import OrgValidator
 from controller.semester import semester_parser
+from service.CourseFinishStatistic import CourseRateCalculateService
 from service.TotalCourseFinishStatistic import TotalCourseRateService
 from service.SemesterStatistic import SemesterStatistic
 from middleware.ExceptionHandler import ValidatorError
@@ -58,7 +59,16 @@ async def topKproba_all(k: int):
     if k > len(all_stu_id):
         raise ValidatorError("查询数量不能大于学生总数!")
     all_stu_proba = sorted([[x, await probaPredModel.proba_pred(x)] for x in all_stu_id], reverse=True, key=lambda x: x[1])[:k]
-    return normal_resp.success(result=[{"name":(await Member.get(id=x[0]).values_list("name"))[0], "value":x[1]} for x in all_stu_proba])
+    result = []
+    for x in all_stu_proba:
+        mem = await Member.get(id=x[0])
+        org = await mem.organization.get()
+        result.append({
+            "member": mem,
+            "organization": org,
+            "rate": x[1]
+        })
+    return normal_resp.success(result=result)
 
 @demand.get("/topKproba/org/{org_id}/{k}", description="获取指定支部中不做下一期课程概率最高的k个人")
 async def topKproba(org_id:str, k: int):
@@ -69,4 +79,22 @@ async def topKproba(org_id:str, k: int):
     if k > len(org_stu_id):
         raise ValidatorError("查询数量不能大于支部学生总数!")
     org_stu_proba = sorted([[x, await probaPredModel.proba_pred(x)] for x in org_stu_id], reverse=True, key=lambda x: x[1])[:k]
-    return normal_resp.success(result=[{"name":(await Member.get(id=x[0]).values_list("name"))[0], "value":x[1]} for x in org_stu_proba])
+    result = []
+    for x in org_stu_proba:
+        mem = await Member.get(id=x[0])
+        org = await mem.organization.get()
+        result.append({
+            "member": mem,
+            "organization": org,
+            "rate": x[1]
+        })
+    return normal_resp.success(result=result)
+
+
+@demand.get("/courseOverView/{course}")
+async def courseOverview(course: str):
+    return normal_resp.success(result={
+        "currentCourse": course.replace("C", ""),
+        "finish_rate": await CourseRateCalculateService.get_p_org_course_rate(course),
+        "count": 5,
+    })

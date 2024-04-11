@@ -98,7 +98,7 @@ class CourseRateCalculateService:
                 org_id = rank[0]
                 finish_rank[org_id] = {}
                 finish_rank[org_id][course.id] = index + 1
-        cls._finish_rate_rank_list = finish_rank
+        # cls._finish_rate_rank_list = finish_rank
 
     # 获取某次课程中支部完成率
     @classmethod
@@ -126,4 +126,4 @@ class CourseRateCalculateService:
     # 获取某次课程中支部完成率排名列表
     @classmethod
     async def get_org_rate_list(cls, course_id):
-        return cls._finish_rate_rank[course_id]
+        return cls._finish_rate_rank_list[course_id]
