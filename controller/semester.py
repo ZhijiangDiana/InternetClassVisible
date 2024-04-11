@@ -45,13 +45,14 @@ async def get_all_semesters():
 async def all_member(semester: str):
     semester = semester_parser(semester)
     res = await SemesterStatistic.get_all_stu_rank(semester)
+    res = res[:50]
     result = []
     for item in res:
         if item[1] != 0:
-            mem = await Member.get(id=item[0]).values("id", "name", "email", "organization_id", "join_datetime")
+            mem = await Member.get(id=item[0]).values("name", "organization_id", "join_datetime")
             result.append({
                 "member": mem,
-                "organization": await Organization.get(id=mem["organization_id"]).values(),
+                "organization": await Organization.get(id=mem["organization_id"]).values("title"),
                 "rate": item[1],
             })
     return normal_resp.success(result=result)
