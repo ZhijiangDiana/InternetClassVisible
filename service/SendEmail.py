@@ -49,8 +49,8 @@ class EmailService:
         self._message.attach(img)
 
     # TODO 未测试
-    async def send_email(self, receivers: list):
-        self._message['To'] = ";".join(receivers)
+    async def send_email(self, receiver):
+        self._message['To'] = receiver + ";"
         # self._message['Cc'] = ";".join(receivers)
 
         # 发送邮件
@@ -58,8 +58,9 @@ class EmailService:
             with smtplib.SMTP(self._smtp_server, self._smtp_port) as server:
                 server.starttls()
                 server.login(self._sender_email, self._sender_password)
-                server.sendmail(self._sender_email, [self._message['To']], self._message.as_string())
+                server.sendmail(self._sender_email, receiver, self._message.as_string())
                 server.close()
-            print('邮件发送成功')
+            print(f'{receiver}邮件发送成功')
         except smtplib.SMTPException as e:
-            print('邮件发送失败:', str(e))
+            print(f'{receiver}邮件发送失败:', str(e))
+            raise RuntimeError(f'{receiver}邮件发送失败:', str(e))

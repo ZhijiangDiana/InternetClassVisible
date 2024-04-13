@@ -1,8 +1,10 @@
 from fastapi import APIRouter
+from tortoise.expressions import Q
 
 from entity.db_entity import *
 from entity.input_model import CourseValidator
 from entity.response import normal_resp
+from service.SendEmail import EmailService
 
 course = APIRouter()
 
@@ -35,3 +37,15 @@ async def get_by_id(course_id: str):
     course_id = await CourseValidator(course_id)
     cou = await Course.get(id=course_id)
     return normal_resp.success(result=cou)
+
+
+@course.post("/sendEmails")
+async def send_email():
+    course = await Course.filter().order_by('-start_datetime').first()
+    finished_member = await MemberCourse.filter(course_id=course.id).values_list('member_id', flat=True)
+    mems = await Member.filter(~Q(id__in=finished_member)).filter(email__isnull=False)
+
+    # print(mems.__len__())
+    for mem in mems:
+        await EmailService().send_email(mem.email)
+    return normal_resp.success(result=None)
