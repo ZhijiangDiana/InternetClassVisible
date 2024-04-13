@@ -11,6 +11,7 @@ from service.SemesterStatistic import SemesterStatistic
 from middleware.ExceptionHandler import ValidatorError
 import numpy as np
 from collections import Counter
+import random
 
 demand = APIRouter()
 
@@ -119,3 +120,14 @@ async def semesterOverView(semester: str):
         "averageRate": float(np.mean(orgRates)),
         "newMemberNum": newMemberNum
     })
+
+
+@demand.get("/unfinish")
+async def unfinish():
+    latest_course = (await Course.all().order_by("start_datetime").values())[-1]
+    finished_member = [i[0] for i in await MemberCourse.filter(course_id=latest_course["id"]).values_list("member_id")]
+    unfinished_member = (await Member.filter(id__not_in=finished_member).prefetch_related("organization").values("join_datetime", "name", "organization__title"))
+    random.shuffle(unfinished_member)
+    unfinished_member = unfinished_member[:50]
+    return normal_resp.success(result=[{"member":{"join_datetime":i["join_datetime"], "name":i["name"]}, 
+                                        "organization":{"title":i["organization__title"]}} for i in unfinished_member])
