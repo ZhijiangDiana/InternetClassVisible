@@ -32,7 +32,7 @@ async def initialize():
     print("\033[32m初始化完成\033[0m")
 
     # 初始化结束后开始定时更新
-    scheduler.add_job(refresh_running, "interval", minutes=1, args=[])
+    # scheduler.add_job(refresh_running, "interval", minutes=1, args=[])
 
 
 scheduler.add_job(initialize, "date", next_run_time=datetime.datetime.now() + datetime.timedelta(seconds=2), args=[])
