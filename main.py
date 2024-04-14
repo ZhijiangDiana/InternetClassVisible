@@ -1,12 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+from starlette.staticfiles import StaticFiles
 
 from config import *
 from tortoise.contrib.fastapi import register_tortoise
 from contextlib import asynccontextmanager
 
 from controller import *
+from controller.video import video
 from middleware import *
 from service.DataIn.InterfacePraparation import YouthBigLearning
 from service.GlobalTimer import scheduler
@@ -33,6 +35,8 @@ app.add_middleware(
 # 全局异常处理
 app.add_exception_handler(Exception, general_exception_handler)
 
+app.mount("/static", StaticFiles(directory="static"))  # 服务器静态文件，可以直接被访问
+
 app.include_router(auth, prefix="/authentication", tags=["authentication_api"])
 app.include_router(course, prefix="/course", tags=["course_api"])
 app.include_router(organization, prefix="/organization", tags=["organization_api"])
@@ -41,6 +45,7 @@ app.include_router(record, prefix="/finish_record", tags=["finish_record_api"])
 app.include_router(p_org, prefix="/p_org", tags=["p_org_api"])
 app.include_router(semester, prefix="/semester", tags=["semester_api"])
 app.include_router(demand, prefix="/demand", tags=["front end demand"])
+app.include_router(video, prefix="/video")
 
 register_tortoise(
     app=app,

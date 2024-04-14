@@ -21,7 +21,7 @@ TORTOISE_ORM = {
     'timezone': 'Asia/Shanghai'
 }
 
-SERVER_IP = "172.23.119.188"
+SERVER_IP = "172.22.187.80"
 SERVER_PORT = 8080
 
 LOGIN_JSON = "service/DataIn/prop.json"
