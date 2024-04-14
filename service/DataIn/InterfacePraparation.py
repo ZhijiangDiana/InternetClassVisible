@@ -85,14 +85,14 @@ class YouthBigLearning:
                 cls.__instance = super().__new__(cls)
                 cls.__login(cls.__instance, json_file_path)
             
-            # 隔一小时重登录一次，不过具体重登时刻受此类的被调用周期影响
-            if datetime.datetime.now() - cls.__instance.__last_login_time >= datetime.timedelta(hours=1):
-                cls.__login(cls.__instance, json_file_path)
-                cls.__instance.__last_login_time = datetime.datetime.now()
-            
-            # 每周一更新一下最新期数
-            if datetime.datetime.now().weekday() == 0 and datetime.datetime.now().hour <= 1:
-                cls.__instance.renewMostRecentPeriodicalNum(json_file_path)
+            # # 隔一小时重登录一次，不过具体重登时刻受此类的被调用周期影响
+            # if datetime.datetime.now() - cls.__instance.__last_login_time >= datetime.timedelta(hours=1):
+            #     cls.__login(cls.__instance, json_file_path)
+            #     cls.__instance.__last_login_time = datetime.datetime.now()
+            #
+            # # 每周一更新一下最新期数
+            # if datetime.datetime.now().weekday() == 0 and datetime.datetime.now().hour <= 1:
+            #     cls.__instance.renewMostRecentPeriodicalNum(json_file_path)
         return cls.__instance
 
     """
