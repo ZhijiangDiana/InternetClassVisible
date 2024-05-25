@@ -6,6 +6,7 @@ from entity.response import normal_resp
 from entity.input_model import OrgValidator
 from controller.semester import semester_parser
 from service.CourseFinishStatistic import CourseRateCalculateService
+from service.SendEmail import EmailService
 from service.TotalCourseFinishStatistic import TotalCourseRateService
 from service.SemesterStatistic import SemesterStatistic
 from middleware.ExceptionHandler import ValidatorError
@@ -97,7 +98,7 @@ async def courseOverview(course: str):
     return normal_resp.success(result={
         "currentCourse": course.replace("C", ""),
         "finish_rate": await CourseRateCalculateService.get_p_org_course_rate(course),
-        "count": 5,
+        "count": EmailService().cnt,
     })
 
 

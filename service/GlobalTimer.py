@@ -16,7 +16,7 @@ async def initialize():
 
     # 单次任务
     # 初始化正在进行的课程
-    await initialize_running()
+    # await initialize_running()
     # 更新课程完成率名单
     await update_statistic_course_finish_rate()
     # 更新总体完成率名单

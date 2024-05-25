@@ -20,6 +20,8 @@ class EmailService:
     _subject = '给我做青年大学习！'
     _message = MIMEMultipart("related")
 
+    cnt = 5
+
     def __new__(cls):
         with cls.__lock:
             if cls.__instance is None:
