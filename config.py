@@ -4,10 +4,10 @@ TORTOISE_ORM = {
             'engine': 'tortoise.backends.mysql',
             'credentials': {
                 'user': 'root',
-                'password': '114514',
-                'host': 'localhost',
+                'password': 'root',
+                'host': '127.0.0.1',
                 'port': '3306',
-                'database': 'internet_class_visible',
+                'database': 'work',
             }
         }
     },
@@ -21,7 +21,7 @@ TORTOISE_ORM = {
     'timezone': 'Asia/Shanghai'
 }
 
-SERVER_IP = "172.22.187.80"
+SERVER_IP = "172.16.22.248"
 SERVER_PORT = 8080
 
 LOGIN_JSON = "service/DataIn/prop.json"
