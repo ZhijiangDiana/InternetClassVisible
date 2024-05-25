@@ -16,7 +16,7 @@ class probaPredModel(ABC):
     # 上次刷新时间
     _refresh_time: datetime = None
     # 多久刷新一次
-    _refresh_cycle: timedelta = timedelta(days=1)
+    _refresh_cycle: timedelta = timedelta(days=365)
     all_course: OrderedDict = None
     _stu_proba_cache: Dict[int, Tuple[Union[float, datetime]]] = dict()
 
@@ -52,7 +52,7 @@ class probaPredModel(ABC):
     async def proba_pred(cls, student_id: int) -> float:
         if student_id in cls._stu_proba_cache.keys() and (datetime.now() - cls._stu_proba_cache[student_id][1]) < cls._refresh_cycle:
             return cls._stu_proba_cache[student_id][0]
-        
+
         await cls.refresh()
         stu_course = await MemberCourse.filter(member_id=student_id).values_list("course_id", "finish_datetime")
         if len(stu_course) == 0:
@@ -68,7 +68,7 @@ class probaPredModel(ABC):
             feature = [[continuous_finish[-1], total_finish[-1], interrupt_finish_cnt[-1]]]
             feature = xgb.DMatrix(feature)
             proba = cls.model.predict(feature)[0].tolist()
-        
+
         cls._stu_proba_cache[student_id] = (proba, datetime.now())
 
         return proba

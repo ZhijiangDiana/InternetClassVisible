@@ -103,6 +103,8 @@ async def courseOverview(course: str):
 
 @demand.get("/semesterOverView/{semester}")
 async def semesterOverView(semester: str):
+    # 第二学期按第一学期算，不然数据就为0了
+    semester = semester[:-1]+"1" if semester[-1]=="2" else semester
     semester = semester_parser(semester)
     sem_start_date, sem_end_date = SemesterStatistic._semester2date(semester)
     course_num = len(await Course.filter(start_datetime__gt=sem_start_date, start_datetime__lt=sem_end_date).values_list("id"))
@@ -129,5 +131,5 @@ async def unfinish():
     unfinished_member = (await Member.filter(id__not_in=finished_member).prefetch_related("organization").values("join_datetime", "name", "organization__title"))
     random.shuffle(unfinished_member)
     unfinished_member = unfinished_member[:50]
-    return normal_resp.success(result=[{"member":{"join_datetime":i["join_datetime"], "name":i["name"]}, 
+    return normal_resp.success(result=[{"member":{"join_datetime":i["join_datetime"], "name":i["name"]},
                                         "organization":{"title":i["organization__title"]}} for i in unfinished_member])

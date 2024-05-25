@@ -13,7 +13,7 @@ scheduler = AsyncIOScheduler()
 
 async def initialize():
     await Tortoise.init(config=TORTOISE_ORM)
-    
+
     # 单次任务
     # 初始化正在进行的课程
     await initialize_running()
